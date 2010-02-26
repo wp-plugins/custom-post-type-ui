@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types in WordPress
 Author: WebDevStudios
-Version: 0.1
+Version: 0.1.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.1' );
+define( 'CPT_VERSION', '0.1.1' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('url') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
 
@@ -72,7 +72,7 @@ function cpt_delete_post_type() {
 
 function cpt_register_settings() {
 	global $cpt_error;
-	
+
 	If (isset($_POST['cpt_edit'])) {
 		//edit a custom post type
 		check_admin_referer('cpt_add_custom_post_type');
@@ -184,8 +184,10 @@ function cpt_settings_page() {
                 <td valign="top"><?php echo disp_boolean($cpt_post_type[8]); ?></td>
                 <td>
 					<?php
-					foreach ($cpt_post_type[9] as $cpt_supports) {
-						echo $cpt_supports .'<br />';
+					If (is_array($cpt_post_type[9])) {
+						foreach ($cpt_post_type[9] as $cpt_supports) {
+							echo $cpt_supports .'<br />';
+						}
 					}
 					?>
                 </td>
@@ -250,20 +252,20 @@ If (isset($_GET['cpt_error'])) { ?>
     <table class="form-table">
         <tr valign="top">
         <th scope="row"><?php _e('Post Type Name', 'cpt-plugin') ?> <span style="color:red;">*</span></th>
-        <td><input type="text" name="cpt_custom_post_type[]" value="<?php echo esc_html($cpt_post_type_name); ?>" /> <a href="#" title="The post type name.  Used to retrieve custom post type content.  Should be short and sweet" style="cursor: help;">?</a> (e.g. bars)</td>
+        <td><input type="text" name="cpt_custom_post_type[]" value="<?php If (isset($cpt_post_type_name)) { echo esc_html($cpt_post_type_name); } ?>" /> <a href="#" title="The post type name.  Used to retrieve custom post type content.  Should be short and sweet" style="cursor: help;">?</a> (e.g. bars)</td>
         </tr>
 
         <tr valign="top">
         <th scope="row"><?php _e('Label', 'cpt-plugin') ?></th>
-        <td><input type="text" name="cpt_custom_post_type[]" value="<?php echo esc_html($cpt_label); ?>" /> <a href="#" title="Post type label.  Used in the admin menu for displaying post types." style="cursor: help;">?</a> (e.g. Bars)</td>
+        <td><input type="text" name="cpt_custom_post_type[]" value="<?php If (isset($cpt_label)) { echo esc_html($cpt_label); } ?>" /> <a href="#" title="Post type label.  Used in the admin menu for displaying post types." style="cursor: help;">?</a> (e.g. Bars)</td>
         </tr>
 
         <tr valign="top">
         <th scope="row"><?php _e('Public', 'cpt-plugin') ?></th>
         <td>
         	<SELECT name="cpt_custom_post_type[]">
-            	<OPTION value="0" <?php If ($cpt_public == 0 && $cpt_public != '') { echo 'selected="selected"'; } ?>>False</OPTION>
-                <OPTION value="1" <?php If ($cpt_public == 1 || is_null($cpt_public)) { echo 'selected="selected"'; } ?>>True</OPTION>
+            	<OPTION value="0" <?php If (isset($cpt_public)) { If ($cpt_public == 0 && $cpt_public != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
+                <OPTION value="1" <?php If (isset($cpt_public)) { If ($cpt_public == 1 || is_null($cpt_public)) { echo 'selected="selected"'; } } ?>>True</OPTION>
             </SELECT> <a href="#" title="Whether posts of this type should be shown in the admin UI" style="cursor: help;">?</a> (default: True)
         </td>
         </tr>
@@ -272,20 +274,20 @@ If (isset($_GET['cpt_error'])) { ?>
         <th scope="row"><?php _e('Show UI', 'cpt-plugin') ?></th>
         <td>
         	<SELECT name="cpt_custom_post_type[]">
-            	<OPTION value="0" <?php If ($cpt_showui == 0 && $cpt_showui != '') { echo 'selected="selected"'; } ?>>False</OPTION>
-                <OPTION value="1" <?php If ($cpt_showui == 1 || is_null($cpt_showui)) { echo 'selected="selected"'; } ?>>True</OPTION>
+            	<OPTION value="0" <?php If (isset($cpt_showui)) { If ($cpt_showui == 0 && $cpt_showui != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
+                <OPTION value="1" <?php If (isset($cpt_showui)) { If ($cpt_showui == 1 || is_null($cpt_showui)) { echo 'selected="selected"'; } } ?>>True</OPTION>
             </SELECT> <a href="#" title="Whether to generate a default UI for managing this post type" style="cursor: help;">?</a> (default: True)
         </td>
         </tr>
         <?php
 		//set edit link deafult
-		If (!$cpt_edit_link) {
+		If (isset($cpt_edit_link) && !$cpt_edit_link) {
 			$cpt_edit_link = 'post.php?post=%d';
 		}
 		?>
         <tr valign="top">
         <th scope="row"><?php _e('Edit Link', 'cpt-plugin') ?></th>
-        <td><input type="text" name="cpt_custom_post_type[]" value="<?php echo esc_html($cpt_edit_link); ?>" /> <a href="#" title="" style="cursor: help;">?</a></td>
+        <td><input type="text" name="cpt_custom_post_type[]" value="<?php If (isset($cpt_edit_link)) { echo esc_html($cpt_edit_link); } ?>" /> <a href="#" title="" style="cursor: help;">?</a></td>
         </tr>
 
         <tr valign="top">
@@ -297,8 +299,8 @@ If (isset($_GET['cpt_error'])) { ?>
         <th scope="row"><?php _e('Hierarchical', 'cpt-plugin') ?></th>
         <td>
         	<SELECT name="cpt_custom_post_type[]">
-            	<OPTION value="0" <?php If ($cpt_hierarchical == 0) { echo 'selected="selected"'; } ?>>False</OPTION>
-                <OPTION value="1" <?php If ($cpt_hierarchical == 1) { echo 'selected="selected"'; } ?>>True</OPTION>
+            	<OPTION value="0" <?php If (isset($cpt_hierarchical)) { If ($cpt_hierarchical == 0) { echo 'selected="selected"'; } } ?>>False</OPTION>
+                <OPTION value="1" <?php If (isset($cpt_hierarchical)) { If ($cpt_hierarchical == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
             </SELECT> <a href="#" title="Whether the post type is hierarchical" style="cursor: help;">?</a> (default: False)
         </td>
         </tr>
@@ -307,8 +309,8 @@ If (isset($_GET['cpt_error'])) { ?>
         <th scope="row"><?php _e('Rewrite', 'cpt-plugin') ?></th>
         <td>
         	<SELECT name="cpt_custom_post_type[]">
-            	<OPTION value="0" <?php If ($cpt_rewrite == 0) { echo 'selected="selected"'; } ?>>False</OPTION>
-                <OPTION value="1" <?php If ($cpt_rewrite == 1) { echo 'selected="selected"'; } ?>>True</OPTION>
+            	<OPTION value="0" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 0) { echo 'selected="selected"'; } } ?>>False</OPTION>
+                <OPTION value="1" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
             </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
         </td>
         </tr>
@@ -317,8 +319,8 @@ If (isset($_GET['cpt_error'])) { ?>
         <th scope="row"><?php _e('Query Var', 'cpt-plugin') ?></th>
         <td>
         	<SELECT name="cpt_custom_post_type[]">
-            	<OPTION value="0" <?php If ($cpt_query_var == 0) { echo 'selected="selected"'; } ?>>False</OPTION>
-                <OPTION value="1" <?php If ($cpt_query_var == 1) { echo 'selected="selected"'; } ?>>True</OPTION>
+            	<OPTION value="0" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 0) { echo 'selected="selected"'; } } ?>>False</OPTION>
+                <OPTION value="1" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
             </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
         </td>
         </tr>
@@ -326,12 +328,12 @@ If (isset($_GET['cpt_error'])) { ?>
         <tr valign="top">
         <th scope="row"><?php _e('Supports', 'cpt-plugin') ?></th>
         <td>
-        	<input type="checkbox" name="cpt_supports[]" value="excerpts" <?php If (in_array('excerpts', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-            <input type="checkbox" name="cpt_supports[]" value="trackbacks" <?php If (in_array('trackbacks', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-            <input type="checkbox" name="cpt_supports[]" value="custom-fields" <?php If (in_array('custom-fields', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-            <input type="checkbox" name="cpt_supports[]" value="comments" <?php If (in_array('comments', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-            <input type="checkbox" name="cpt_supports[]" value="revisions" <?php If (in_array('revisions', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-            <input type="checkbox" name="cpt_supports[]" value="post-thumbnails" <?php If (in_array('post-thumbnails', $cpt_supports)) echo 'checked="checked"';  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+        	<input type="checkbox" name="cpt_supports[]" value="excerpts" <?php If (is_array($cpt_supports)) { If (in_array('excerpts', $cpt_supports)) echo 'checked="checked"'; } ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+            <input type="checkbox" name="cpt_supports[]" value="trackbacks" <?php If (is_array($cpt_supports)) { If (in_array('trackbacks', $cpt_supports)) echo 'checked="checked"'; } ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+            <input type="checkbox" name="cpt_supports[]" value="custom-fields" <?php If (is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+            <input type="checkbox" name="cpt_supports[]" value="comments" <?php If (is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+            <input type="checkbox" name="cpt_supports[]" value="revisions" <?php If (is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+            <input type="checkbox" name="cpt_supports[]" value="post-thumbnails" <?php If (is_array($cpt_supports)) { If (in_array('post-thumbnails', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
         </td>
         </tr>
     </table>

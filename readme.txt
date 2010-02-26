@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.1
+Stable tag: 0.1.1
 
 Admin UI for creating custom post types in WordPress
 
@@ -22,10 +22,17 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 
 == Changelog ==
 
+= 0.1.1 =
+* Fixed a bunch of warnings
+
 = 0.1 =
 * First beta release
 
 == Upgrade Notice ==
+
+
+= 0.1.1 =
+* Fixed a bunch of warnings
 
 = 0.1 =
 * First beta release
@@ -45,4 +52,4 @@ That's it! Now you can easily start creating custom post types in WordPress
 The register_post_type function was added in WordPress 2.9 so technically it should work in 2.9, but there is no admin menu UI so all post types are created and used behind the scenes.
 
 == Plugin Support ==
-[CollabPress Support](http://webdevstudios.com/support/forum/custom-post-type-ui/ "WordPress Plugins and Support Services")
+[Custom Post Type UI Support](http://webdevstudios.com/support/forum/custom-post-type-ui/ "WordPress Plugins and Support Services")
