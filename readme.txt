@@ -1,10 +1,10 @@
 === Custom Post Type UI ===
 Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
-Tags: custom post types, CMS, post, types
+Tags: custom post types, CMS, post, types, cck
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 
 Admin UI for creating custom post types in WordPress
 
@@ -22,6 +22,9 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 
 == Changelog ==
 
+= 0.1.2 =
+* Fixed a bug where default values were incorrect
+
 = 0.1.1 =
 * Fixed a bunch of warnings
 
@@ -30,6 +33,8 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 
 == Upgrade Notice ==
 
+= 0.1.2 =
+* Fixed a bug where default values were incorrect
 
 = 0.1.1 =
 * Fixed a bunch of warnings
