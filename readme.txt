@@ -1,26 +1,33 @@
 === Custom Post Type UI ===
 Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
-Tags: custom post types, CMS, post, types, cck
+Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.1.2
+Stable tag: 0.2
 
-Admin UI for creating custom post types in WordPress
+Admin UI for creating custom post types and custom taxonomies in WordPress
 
 == Description ==
 
-This plugin provides an easy to use interface to create and administer custom post types in WordPress.  This plugin is created for WordPress 3.0.  
+This plugin provides an easy to use interface to create and administer custom post types in WordPress.  Plugin can also create custom taxonomies.  This plugin is created for WordPress 3.0.  
 
 You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin located here: http://wordpress.org/extend/plugins/wordpress-beta-tester/
 
 == Screenshots ==
 
 1. Create a custom post type
-2. New custom post type is automatically added to your admin menu
-3. Easily view and edit existing custom post types
+2. Create a custom taxonomy
+3. Custom post type and taxonomies are automatically added to your admin menus
+4. Easily view and edit existing custom post types
+5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.2 =
+* Added support for creating custom taxonomies
+* Increased internationalization support
+* Fixed siteurl bug
 
 = 0.1.2 =
 * Fixed a bug where default values were incorrect
@@ -32,6 +39,10 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.2 =
+* Fixed the siteurl bug
+* Added support for creating custom taxonomies
 
 = 0.1.2 =
 * Fixed a bug where default values were incorrect
@@ -48,7 +59,7 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 2. Activate the plugin
 3. Navigate to Settings > Custom Post Type UI
 
-That's it! Now you can easily start creating custom post types in WordPress
+That's it! Now you can easily start creating custom post types and taxonomies in WordPress
 
 == Frequently Asked Questions ==
 
