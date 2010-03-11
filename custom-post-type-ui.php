@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.2
+Version: 0.2.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.2' );
+define( 'CPT_VERSION', '0.2.1' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
 
@@ -23,7 +23,7 @@ add_action( 'admin_init', 'cpt_delete_post_type' );
 add_action( 'admin_init', 'cpt_register_settings' );
 
 //process custom taxonomies if they exist
-add_action( 'init', 'create_custom_taxonomies', 0 );
+add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
 
 function cpt_plugin_menu() {
 	//create custom post type menu link
@@ -58,7 +58,7 @@ If (is_array($cpt_post_types)) {
 
 
 
-function create_custom_taxonomies() {
+function cpt_create_custom_taxonomies() {
 	//register custom taxonomies
 	$cpt_tax_types = get_option('cpt_custom_tax_types');
 	
@@ -500,9 +500,9 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <th scope="row"><?php _e('Rewrite', 'cpt-plugin') ?></th>
                     <td>
                         <SELECT name="cpt_custom_post_type[]" tabindex="8">
-                            <OPTION value="0" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 0 && $cpt_rewrite != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
-                            <OPTION value="1" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 1 || is_null($cpt_rewrite)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
-                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
+                            <OPTION value="0" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 0) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>False</OPTION>
+                            <OPTION value="1" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
+                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
                     </td>
                     </tr>
             
@@ -510,9 +510,9 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <th scope="row"><?php _e('Query Var', 'cpt-plugin') ?></th>
                     <td>
                         <SELECT name="cpt_custom_post_type[]" tabindex="9">
-                            <OPTION value="0" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 0 && $cpt_query_var != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
-                            <OPTION value="1" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 1 || is_null($cpt_query_var)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
-                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
+                            <OPTION value="0" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 0) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>False</OPTION>
+                            <OPTION value="1" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
+                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
                     </td>
                     </tr>
             

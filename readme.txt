@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.2
+Stable tag: 0.2.1
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -24,6 +24,9 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 
 == Changelog ==
 
+= 0.2.1 =
+* Set default Query Var setting to False
+
 = 0.2 =
 * Added support for creating custom taxonomies
 * Increased internationalization support
@@ -39,6 +42,9 @@ You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin locat
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.2.1 =
+* Set default Query Var setting to False
 
 = 0.2 =
 * Fixed the siteurl bug
