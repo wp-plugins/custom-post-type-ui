@@ -14,6 +14,9 @@ This plugin provides an easy to use interface to create and administer custom po
 
 You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin located here: http://wordpress.org/extend/plugins/wordpress-beta-tester/
 
+Below is a short example video showing Custom Post Type UI in action!
+[vimeo http://vimeo.com/10187055]
+
 == Screenshots ==
 
 1. Create a custom post type
