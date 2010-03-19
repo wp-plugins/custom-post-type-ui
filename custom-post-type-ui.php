@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.3
+Version: 0.3.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.3' );
+define( 'CPT_VERSION', '0.3.1' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
 $CPT_URL = curPageURL();
@@ -342,7 +342,7 @@ cpt_footer();
 function cpt_manage_cpt() {
 	global $CPT_URL;
 	
-	$MANAGE_URL = clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
 ?>
 <div class="wrap">
 <?php
@@ -422,7 +422,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 function cpt_manage_taxonomies() {
 	global $CPT_URL;
 	
-	$MANAGE_URL = clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
 ?>
 <div class="wrap">
 <?php
@@ -671,14 +671,14 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                     <tr valign="top">
                     <th scope="row"><?php _e('Supports', 'cpt-plugin') ?></th>
                     <td>
-                        <input type="checkbox" name="cpt_supports[]" tabindex="10" value="title" <?php If (is_array($cpt_supports)) { If (in_array('title', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Title <a href="#" title="Adds the title meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="11" value="editor" <?php If (is_array($cpt_supports)) { If (in_array('editor', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Editor <a href="#" title="Adds the content editor meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="12" value="excerpts" <?php If (is_array($cpt_supports)) { If (in_array('excerpts', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="13" value="trackbacks" <?php If (is_array($cpt_supports)) { If (in_array('trackbacks', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="14" value="custom-fields" <?php If (is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="15" value="comments" <?php If (is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="16" value="revisions" <?php If (is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="17" value="post-thumbnails" <?php If (is_array($cpt_supports)) { If (in_array('post-thumbnails', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="10" value="title" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('title', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Title <a href="#" title="Adds the title meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="11" value="editor" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('editor', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Editor <a href="#" title="Adds the content editor meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="12" value="excerpts" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('excerpts', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="13" value="trackbacks" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('trackbacks', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="14" value="custom-fields" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="15" value="comments" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="16" value="revisions" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="17" value="post-thumbnails" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('post-thumbnails', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                     </td>
                     </tr>
                 </table>
@@ -793,11 +793,11 @@ function cpt_check_return($return) {
 	global $CPT_URL;
 	
 	If($return=='cpt') {
-		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_cpt');
+		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_cpt');
 	}Elseif($return=='tax'){
-		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_taxonomies');
+		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_taxonomies');
 	}Elseif($return=='add') {
-		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
 	}Else{
 		return $CPT_URL;
 	}
@@ -813,7 +813,7 @@ function disp_boolean($booText) {
 
 function curPageURL() {
  $pageURL = 'http';
- if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+ if (!empty($_SERVER['HTTPS'])) {$pageURL .= "s";}  
  $pageURL .= "://";
  if ($_SERVER["SERVER_PORT"] != "80") {
   $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];

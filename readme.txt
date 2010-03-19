@@ -27,6 +27,9 @@ Below is a short example video showing Custom Post Type UI in action!
 
 == Changelog ==
 
+= 0.3.1 =
+* Fixed multiple warnings and errors
+
 = 0.3 =
 * added new menu/submenus for individual sections
 * added support for 'title' and 'editor' in CPT Supports field
@@ -50,6 +53,9 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.3.1 =
+* Fixed multiple warnings and errors
 
 = 0.3 =
 * added new menu/submenus for individual sections
@@ -89,6 +95,10 @@ If you are upgrading from a version prior to v0.3 you will need to delete and re
 = Will this work in previous version of WordPress =
 
 The register_post_type function was added in WordPress 2.9 so technically it should work in 2.9, but there is no admin menu UI so all post types are created and used behind the scenes.
+
+= I'm getting an error: Undefined offset =
+
+v0.3 reworked how custom taxonomies are stored.  You need to delete your current taxonomies and recreate them in the new version for this error to go away.
 
 == Plugin Support ==
 [Custom Post Type UI Support](http://webdevstudios.com/support/forum/custom-post-type-ui/ "WordPress Plugins and Support Services")
