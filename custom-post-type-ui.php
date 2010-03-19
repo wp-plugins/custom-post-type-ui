@@ -4,14 +4,15 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.2.1
+Version: 0.3
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.2.1' );
+define( 'CPT_VERSION', '0.3' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
+$CPT_URL = curPageURL();
 
 // create custom plugin settings menu
 add_action('admin_menu', 'cpt_plugin_menu');
@@ -26,8 +27,13 @@ add_action( 'admin_init', 'cpt_register_settings' );
 add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
 
 function cpt_plugin_menu() {
-	//create custom post type menu link
-	add_options_page('Custom Post Type UI', 'Custom Post Type UI', 'administrator', __FILE__, 'cpt_settings_page');
+	//create custom post type menu
+	add_menu_page('Custom Post Types', 'Custom Post Types', 'administrator', __FILE__, 'cpt_settings');
+	
+	//create submenu items
+	add_submenu_page(__FILE__, 'Add New', 'Add New', 'administrator', __FILE__.'_cpt_add_new', 'cpt_add_new');
+	add_submenu_page(__FILE__, 'Manage Post Types', 'Manage Post Types', 'administrator', __FILE__.'_cpt_manage_cpt', 'cpt_manage_cpt');
+	add_submenu_page(__FILE__, 'Manage Taxonomies', 'Manage Taxonomies', 'administrator', __FILE__.'_cpt_manage_taxonomies', 'cpt_manage_taxonomies');
 }
 
 //register custom post types
@@ -38,9 +44,9 @@ If (is_array($cpt_post_types)) {
 	foreach ($cpt_post_types as $cpt_post_type) {
 
 		If (!$cpt_post_type[1]) {
-			$cpt_label = stripslashes($cpt_post_type[0]);
+			$cpt_label = esc_html($cpt_post_type[0]);
 		}Else{
-			$cpt_label = stripslashes($cpt_post_type[1]);
+			$cpt_label = esc_html($cpt_post_type[1]);
 		}
 
 		register_post_type( $cpt_post_type[0], array(	'label' => __($cpt_label),
@@ -67,19 +73,27 @@ function cpt_create_custom_taxonomies() {
 		foreach ($cpt_tax_types as $cpt_tax_type) {
 	
 			If (!$cpt_tax_type[1]) {
-				$cpt_label = stripslashes($cpt_tax_type[0]);
+				$cpt_label = esc_html($cpt_tax_type[0]);
 			}Else{
-				$cpt_label = stripslashes($cpt_tax_type[1]);
+				$cpt_label = esc_html($cpt_tax_type[1]);
+			}
+			
+			//check if singular label was filled out
+			If (!$cpt_tax_type[2]) {
+				$cpt_singular_label = esc_html($cpt_tax_type[0]);
+			}Else{
+				$cpt_singular_label = esc_html($cpt_tax_type[2]);
 			}
 			
 			//register our custom taxonomies
 			register_taxonomy( $cpt_tax_type[0], 
-				$cpt_tax_type[2], 
-				array( 'hierarchical' => $cpt_tax_type[3], 
+				$cpt_tax_type[3], 
+				array( 'hierarchical' => $cpt_tax_type[4], 
 				'label' => $cpt_label, 
-				'show_ui' => $cpt_tax_type[4], 
-				'query_var' => $cpt_tax_type[5], 
-				'rewrite' => $cpt_tax_type[6] 
+				'show_ui' => $cpt_tax_type[5], 
+				'query_var' => $cpt_tax_type[6], 
+				'rewrite' => $cpt_tax_type[7], 
+				'singular_label' => $cpt_singular_label 
 			) );
 
 		}	
@@ -88,6 +102,8 @@ function cpt_create_custom_taxonomies() {
 
 //delete custom post type or custom taxonomy
 function cpt_delete_post_type() {
+	global $CPT_URL;
+	
 	//check if we are deleting a custom post type
 	If(isset($_GET['deltype'])) {
 		check_admin_referer('cpt_delete_post_type');
@@ -100,12 +116,19 @@ function cpt_delete_post_type() {
 
 		update_option('cpt_custom_post_types', $cpt_post_types);
 
-		wp_redirect(CPT_URL);
+		If (isset($_GET['return'])) {
+			$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+		}Else{
+			$RETURN_URL = $CPT_URL;
+		}
+
+		wp_redirect($RETURN_URL .'&cpt_msg=del');
 	}
 	
 	//check if we are deleting a custom taxonomy
 	If(isset($_GET['deltax'])) {
 		check_admin_referer('cpt_delete_tax');
+
 		$delType = intval($_GET['deltax']);
 		$cpt_taxonomies = get_option('cpt_custom_tax_types');
 
@@ -115,13 +138,19 @@ function cpt_delete_post_type() {
 
 		update_option('cpt_custom_tax_types', $cpt_taxonomies);
 
-		wp_redirect(CPT_URL);
+		If (isset($_GET['return'])) {
+			$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+		}Else{
+			$RETURN_URL = $CPT_URL;
+		}
+
+		wp_redirect($RETURN_URL .'&cpt_msg=del');
 	}
 	
 }
 
 function cpt_register_settings() {
-	global $cpt_error;
+	global $cpt_error, $CPT_URL;
 	
 	If (isset($_POST['cpt_edit'])) {
 		//edit a custom post type
@@ -151,7 +180,13 @@ function cpt_register_settings() {
 			//save custom post types
 			update_option('cpt_custom_post_types', $cpt_options);
 
-			wp_redirect(CPT_URL);
+			If (isset($_GET['return'])) {
+				$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+			}Else{
+				$RETURN_URL = $CPT_URL;
+			}
+	
+			wp_redirect($RETURN_URL);
 
 		}
 
@@ -163,7 +198,13 @@ function cpt_register_settings() {
 		$cpt_form_fields = $_POST['cpt_custom_post_type'];
 
 		If (empty($cpt_form_fields[0])) {
-			wp_redirect(CPT_URL .'&cpt_error=1');
+			If (isset($_GET['return'])) {
+				$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+			}Else{
+				$RETURN_URL = $CPT_URL;
+			}
+
+			wp_redirect($RETURN_URL .'&cpt_error=1');
 			exit();
 		}
 
@@ -184,7 +225,13 @@ function cpt_register_settings() {
 		//save new custom post type array in the CPT option
 		update_option('cpt_custom_post_types', $cpt_options);
 
-		wp_redirect(CPT_URL);
+		If (isset($_GET['return'])) {
+			$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+		}Else{
+			$RETURN_URL = $CPT_URL;
+		}
+
+		wp_redirect($RETURN_URL .'&cpt_msg=1');
 	}
 	
 	If (isset($_POST['cpt_edit_tax'])) {
@@ -212,7 +259,13 @@ function cpt_register_settings() {
 			//save custom post types
 			update_option('cpt_custom_tax_types', $cpt_options);
 
-			wp_redirect(CPT_URL);
+			If (isset($_GET['return'])) {
+				$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+			}Else{
+				$RETURN_URL = $CPT_URL;
+			}
+	
+			wp_redirect($RETURN_URL);
 
 		}
 
@@ -225,10 +278,22 @@ function cpt_register_settings() {
 		
 		//verify required fields are filled out
 		If (empty($cpt_form_fields[0])) {
-			wp_redirect(CPT_URL .'&cpt_error=2');
+			If (isset($_GET['return'])) {
+				$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+			}Else{
+				$RETURN_URL = $CPT_URL;
+			}
+	
+			wp_redirect($RETURN_URL .'&cpt_error=2');
 			exit();
-		}Elseif(empty($cpt_form_fields[2])) {
-			wp_redirect(CPT_URL .'&cpt_error=3');
+		}Elseif(empty($cpt_form_fields[3])) {
+			If (isset($_GET['return'])) {
+				$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+			}Else{
+				$RETURN_URL = $CPT_URL;
+			}
+	
+			wp_redirect($RETURN_URL .'&cpt_error=3');
 			exit();
 		}
 		
@@ -246,16 +311,51 @@ function cpt_register_settings() {
 		//save new custom taxonomy array in the CPT option
 		update_option('cpt_custom_tax_types', $cpt_options);
 
-		wp_redirect(CPT_URL);
+		If (isset($_GET['return'])) {
+			$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+		}Else{
+			$RETURN_URL = $CPT_URL;
+		}
+
+		wp_redirect($RETURN_URL .'&cpt_msg=2');
 		
 	}
 }
 
-function cpt_settings_page() {
-	global $cpt_error;
+//main welcome/settings page
+function cpt_settings() {
+	global $CPT_URL, $wp_post_types;
+?>
+    <div class="wrap">
+        <h2><?php _e('Custom Post Types UI', 'cpt-plugin'); ?></h2>
+        <p><?php _e('Plugin version', 'cpt-plugin'); ?>: <?php echo CPT_VERSION; ?></p>
+        <p><?php _e('WordPress version', 'cpt-plugin'); ?>: <?php echo get_bloginfo('version'); ?></p>
+        <h3><?php _e('Slightly Outdated Demo Video', 'cpt-plugin'); ?></h3>
+        <object width="400" height="300"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="300"></embed></object>
+    </div>
+<?
+//load footer
+cpt_footer();
+}
+
+//manage custom post types page
+function cpt_manage_cpt() {
+	global $CPT_URL;
+	
+	$MANAGE_URL = clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
 ?>
 <div class="wrap">
+<?php
+//check for success/error messages
+If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
+    <div id="message" class="updated">
+    	<?php _e('Custom post type deleted successfully', 'cpt-plugin'); ?>
+    </div>
+    <?php
+}
+?>
 <h2><?php _e('Manage Custom Post Types', 'cpt-plugin') ?></h2>
+<p><?php _e('Deleting custom post types does <strong>NOT</strong> delete any content added to those post types.  You can easily recreate your post types and the content will still exist.', 'cpt-plugin') ?></p>
 <?php
 	$cpt_post_types = get_option('cpt_custom_post_types');
 
@@ -278,10 +378,10 @@ function cpt_settings_page() {
         <?php
 		$thecounter=0;
 		foreach ($cpt_post_types as $cpt_post_type) {
-			$del_url = CPT_URL .'&deltype=' .$thecounter;
+			$del_url = $CPT_URL .'&deltype=' .$thecounter .'&return=cpt';
 			$del_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($del_url, 'cpt_delete_post_type') : $del_url;
 
-			$edit_url = CPT_URL .'&edittype=' .$thecounter;
+			$edit_url = $MANAGE_URL .'&edittype=' .$thecounter .'&return=cpt';
 			$edit_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($edit_url, 'cpt_edit_post_type') : $edit_url;
 		?>
         	<tr>
@@ -311,10 +411,31 @@ function cpt_settings_page() {
 		<?php
 		$thecounter++;
 		}
-		?></table><?php
+		?></table>
+		</div><?php
+		//load footer
+		cpt_footer();
 	}
+}
+
+//manage custom taxonomies page
+function cpt_manage_taxonomies() {
+	global $CPT_URL;
+	
+	$MANAGE_URL = clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+?>
+<div class="wrap">
+<?php
+//check for success/error messages
+If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
+    <div id="message" class="updated">
+    	<?php _e('Custom taxonomy deleted successfully', 'cpt-plugin'); ?>
+    </div>
+    <?php
+}
 ?>
 <h2><?php _e('Manage Custom Taxonomies', 'cpt-plugin') ?></h2>
+<p><?php _e('Deleting custom taxonomies does <strong>NOT</strong> delete any content added to those taxonomies.  You can easily recreate your taxonomies and the content will still exist.', 'cpt-plugin') ?></p>
 <?php
 	$cpt_tax_types = get_option('cpt_custom_tax_types');
 
@@ -325,7 +446,8 @@ function cpt_settings_page() {
             	<td><strong><?php _e('Action', 'cpt-plugin');?></strong></td>
             	<td><strong><?php _e('Name', 'cpt-plugin');?></strong></td>
                 <td><strong><?php _e('Label', 'cpt-plugin');?></strong></td>
-                <td><strong><?php _e('Object Type', 'cpt-plugin');?></strong></td>
+                <td><strong><?php _e('Singular Label', 'cpt-plugin');?></strong></td>
+                <td><strong><?php _e('Post Type Name', 'cpt-plugin');?></strong></td>
                 <td><strong><?php _e('Hierarchical', 'cpt-plugin');?></strong></td>
                 <td><strong><?php _e('Show UI', 'cpt-plugin');?></strong></td>
                 <td><strong><?php _e('Query Var', 'cpt-plugin');?></strong></td>
@@ -334,10 +456,10 @@ function cpt_settings_page() {
         <?php
 		$thecounter=0;
 		foreach ($cpt_tax_types as $cpt_tax_type) {
-			$del_url = CPT_URL .'&deltax=' .$thecounter;
+			$del_url = $CPT_URL .'&deltax=' .$thecounter .'&return=tax';
 			$del_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($del_url, 'cpt_delete_tax') : $del_url;
 
-			$edit_url = CPT_URL .'&edittax=' .$thecounter;
+			$edit_url = $MANAGE_URL .'&edittax=' .$thecounter .'&return=tax';
 			$edit_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($edit_url, 'cpt_edit_tax') : $edit_url;
 		?>
         	<tr>
@@ -345,10 +467,11 @@ function cpt_settings_page() {
             	<td valign="top"><?php echo stripslashes($cpt_tax_type[0]); ?></td>
                 <td valign="top"><?php echo stripslashes($cpt_tax_type[1]); ?></td>
                 <td valign="top"><?php echo stripslashes($cpt_tax_type[2]); ?></td>
-                <td valign="top"><?php echo disp_boolean($cpt_tax_type[3]); ?></td>
+                <td valign="top"><?php echo stripslashes($cpt_tax_type[3]); ?></td>
                 <td valign="top"><?php echo disp_boolean($cpt_tax_type[4]); ?></td>
                 <td valign="top"><?php echo disp_boolean($cpt_tax_type[5]); ?></td>
                 <td valign="top"><?php echo disp_boolean($cpt_tax_type[6]); ?></td>
+                <td valign="top"><?php echo disp_boolean($cpt_tax_type[7]); ?></td>
             </tr>
             <tr>
             	<td colspan="11"><hr /></td>
@@ -356,11 +479,25 @@ function cpt_settings_page() {
 		<?php
 		$thecounter++;
 		}
-		?></table><?php
+		?></table>
+		</div>
+		<?php
+		//load footer
+		cpt_footer();
 	}
-?>
+}
 
-<?php
+//add new custom post type / taxonomy page
+function cpt_add_new() {
+	global $cpt_error, $CPT_URL;
+	
+	If (isset($_GET['return'])) {
+		$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+	}Else{
+		$RETURN_URL = $CPT_URL;
+	}
+	
+	
 //check if we are editing a custom post type or creating a new one
 If (isset($_GET['edittype']) && !isset($_GET['cpt_edit'])) {
 	check_admin_referer('cpt_edit_post_type');
@@ -400,41 +537,56 @@ If (isset($_GET['edittax']) && !isset($_GET['cpt_edit'])) {
 	//load custom post type values to edit
 	$cpt_tax_name = $cpt_options[$editTax][0];
 	$cpt_tax_label = $cpt_options[$editTax][1];
-	$cpt_tax_object_type = $cpt_options[$editTax][2];
-	$cpt_tax_hierarchical = $cpt_options[$editTax][3];
-	$cpt_tax_showui = $cpt_options[$editTax][4];
-	$cpt_tax_query_var = $cpt_options[$editTax][5];
-	$cpt_tax_rewrite = $cpt_options[$editTax][6];
+	$cpt_singular_label = $cpt_options[$editTax][2];
+	$cpt_tax_object_type = $cpt_options[$editTax][3];
+	$cpt_tax_hierarchical = $cpt_options[$editTax][4];
+	$cpt_tax_showui = $cpt_options[$editTax][5];
+	$cpt_tax_query_var = $cpt_options[$editTax][6];
+	$cpt_tax_rewrite = $cpt_options[$editTax][7];
+
 
 	$cpt_tax_submit_name = 'Edit Custom Taxonomy';
 }Else{
 	$cpt_tax_submit_name = 'Create Custom Taxonomy';
 }
-
-//check for error messages
-If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
-    <div class="error">
-		<?php _e('Post type name is a required field.', 'cpt-plugin'); ?>
+?><div class="wrap"><?php
+//check for success/error messages
+If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
+    <div id="message" class="updated">
+    	<?php _e('Custom post type created successfully', 'cpt-plugin'); ?>
     </div>
-<?php }ElseIf (isset($_GET['cpt_error']) && $_GET['cpt_error']==2) { ?>
-    <div class="error">
-		<?php _e('Taxonomy name is a required field.', 'cpt-plugin'); ?>
+    <?php
+}elseIf (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==2) { ?>
+    <div id="message" class="updated">
+    	<?php _e('Custom taxonomy created successfully', 'cpt-plugin'); ?>
     </div>
-<?php }ElseIf (isset($_GET['cpt_error']) && $_GET['cpt_error']==3) { ?>
-    <div class="error">
-		<?php _e('Object type is a required field.', 'cpt-plugin'); ?>
-    </div>
-<?php } ?>
+    <?php
+}else{
+	If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
+		<div class="error">
+			<?php _e('Post type name is a required field.', 'cpt-plugin'); ?>
+		</div>
+	<?php }ElseIf (isset($_GET['cpt_error']) && $_GET['cpt_error']==2) { ?>
+		<div class="error">
+			<?php _e('Taxonomy name is a required field.', 'cpt-plugin'); ?>
+		</div>
+	<?php }ElseIf (isset($_GET['cpt_error']) && $_GET['cpt_error']==3) { ?>
+		<div class="error">
+			<?php _e('Object type is a required field.', 'cpt-plugin'); ?>
+		</div>
+	<?php } 
+}
+?>
 <table border="0" cellspacing="10">
 	<tr>
     	<td width="50%" valign="top">
 			<?php If (isset($_GET['edittype'])) { ?>
-                <h2><?php _e('Edit Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Edit Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php }Else{ ?>
-                <h2><?php _e('Create New Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Create New Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php } ?>
             <p><?php _e('If you are unfamiliar with the options below only fill out the <strong>Post Type Name</strong> and <strong>Label</strong> fields and check which meta boxes to support.  The other settings are set to the most common defaults for custom post types.', 'cpt-plugin'); ?></p>
-            <form method="post" action="<?php echo CPT_URL; ?>">
+            <form method="post" action="<?php echo $RETURN_URL; ?>">
                 <?php if ( function_exists('wp_nonce_field') )
                     wp_nonce_field('cpt_add_custom_post_type'); ?>
                 <?php If (isset($_GET['edittype'])) { ?>
@@ -519,18 +671,20 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <tr valign="top">
                     <th scope="row"><?php _e('Supports', 'cpt-plugin') ?></th>
                     <td>
-                        <input type="checkbox" name="cpt_supports[]" tabindex="10" value="excerpts" <?php If (is_array($cpt_supports)) { If (in_array('excerpts', $cpt_supports)) echo 'checked="checked"'; } ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="11" value="trackbacks" <?php If (is_array($cpt_supports)) { If (in_array('trackbacks', $cpt_supports)) echo 'checked="checked"'; } ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="12" value="custom-fields" <?php If (is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="13" value="comments" <?php If (is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="14" value="revisions" <?php If (is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="15" value="post-thumbnails" <?php If (is_array($cpt_supports)) { If (in_array('post-thumbnails', $cpt_supports)) echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="10" value="title" <?php If (is_array($cpt_supports)) { If (in_array('title', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Title <a href="#" title="Adds the title meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="11" value="editor" <?php If (is_array($cpt_supports)) { If (in_array('editor', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Editor <a href="#" title="Adds the content editor meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="12" value="excerpts" <?php If (is_array($cpt_supports)) { If (in_array('excerpts', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Excerpts <a href="#" title="Adds the excerpt meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="13" value="trackbacks" <?php If (is_array($cpt_supports)) { If (in_array('trackbacks', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; } ?> />&nbsp;Trackbacks <a href="#" title="Adds the trackbacks meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="14" value="custom-fields" <?php If (is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="15" value="comments" <?php If (is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="16" value="revisions" <?php If (is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="17" value="post-thumbnails" <?php If (is_array($cpt_supports)) { If (in_array('post-thumbnails', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                     </td>
                     </tr>
                 </table>
             
                 <p class="submit">
-                <input type="submit" class="button-primary" tabindex="16" name="cpt_submit" value="<?php _e($cpt_submit_name, 'cpt-plugin') ?>" />
+                <input type="submit" class="button-primary" tabindex="18" name="cpt_submit" value="<?php _e($cpt_submit_name, 'cpt-plugin') ?>" />
                 </p>
             
             </form>
@@ -541,12 +695,12 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
 			$cpt_options = get_option('cpt_custom_tax_types');
 			?>
 			<?php If (isset($_GET['edittax'])) { ?>
-                <h2><?php _e('Edit Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Edit Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php }Else{ ?>
-                <h2><?php _e('Create Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Create Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php } ?>
         	<p><?php _e('If you are unfamiliar with the options below only fill out the <strong>Taxonomy Name</strong> and <strong>Object Type</strong> fields.  The other settings are set to the most common defaults for custom taxonomies.', 'cpt-plugin');?></p>
-            <form method="post" action="<?php echo CPT_URL; ?>">
+            <form method="post" action="<?php echo $RETURN_URL; ?>">
                 <?php if ( function_exists('wp_nonce_field') )
                     wp_nonce_field('cpt_add_custom_taxonomy'); ?>
                 <?php If (isset($_GET['edittax'])) { ?>
@@ -555,23 +709,28 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                 <table class="form-table">
                     <tr valign="top">
                     <th scope="row"><?php _e('Taxonomy Name', 'cpt-plugin') ?> <span style="color:red;">*</span></th>
-                    <td><input type="text" name="cpt_custom_tax[]" tabindex="21" value="<?php If (isset($cpt_tax_name)) { echo esc_attr($cpt_tax_name); } ?>" /> <a href="#" title="The taxonomy name.  Used to retrieve custom taxonomy content.  Should be short and sweet" style="cursor: help;">?</a> (e.g. actor)</td>
+                    <td><input type="text" name="cpt_custom_tax[]" tabindex="21" value="<?php If (isset($cpt_tax_name)) { echo esc_attr($cpt_tax_name); } ?>" /> <a href="#" title="The taxonomy name.  Used to retrieve custom taxonomy content.  Should be short and sweet" style="cursor: help;">?</a> (e.g. actors)</td>
                     </tr>
 
                    <tr valign="top">
                     <th scope="row"><?php _e('Label', 'cpt-plugin') ?></th>
-                    <td><input type="text" name="cpt_custom_tax[]" tabindex="22" value="<?php If (isset($cpt_tax_label)) { echo esc_attr($cpt_tax_label); } ?>" /> <a href="#" title="Taxonomy label.  Used in the admin menu for displaying custom taxonomy." style="cursor: help;">?</a> (e.g. Actor)</td>
+                    <td><input type="text" name="cpt_custom_tax[]" tabindex="22" value="<?php If (isset($cpt_tax_label)) { echo esc_attr($cpt_tax_label); } ?>" /> <a href="#" title="Taxonomy label.  Used in the admin menu for displaying custom taxonomy." style="cursor: help;">?</a> (e.g. Actors)</td>
                     </tr>
                     
                    <tr valign="top">
-                    <th scope="row"><?php _e('Object Type', 'cpt-plugin') ?> <span style="color:red;">*</span></th>
-                    <td><input type="text" name="cpt_custom_tax[]" tabindex="23" value="<?php If (isset($cpt_tax_object_type)) { echo esc_attr($cpt_tax_object_type); } ?>" /> <a href="#" title="What object to attach the custom taxonomy to.  Can be post, page, or link by default.  Can also be any custom post type name." style="cursor: help;">?</a> (e.g. movies)</td>
+                    <th scope="row"><?php _e('Singular Label', 'cpt-plugin') ?></th>
+                    <td><input type="text" name="cpt_custom_tax[]" tabindex="23" value="<?php If (isset($cpt_singular_label)) { echo esc_attr($cpt_singular_label); } ?>" /> <a href="#" title="Taxonomy Singular label.  Used in WordPress when a singular label is needed." style="cursor: help;">?</a> (e.g. Actor)</td>
+                    </tr>
+                    
+                   <tr valign="top">
+                    <th scope="row"><?php _e('Post Type Name', 'cpt-plugin') ?> <span style="color:red;">*</span></th>
+                    <td><input type="text" name="cpt_custom_tax[]" tabindex="24" value="<?php If (isset($cpt_tax_object_type)) { echo esc_attr($cpt_tax_object_type); } ?>" /> <a href="#" title="What object to attach the custom taxonomy to.  Can be post, page, or link by default.  Can also be any custom post type name." style="cursor: help;">?</a> (e.g. movies)</td>
                     </tr>
 
                     <tr valign="top">
                     <th scope="row"><?php _e('Hierarchical', 'cpt-plugin') ?></th>
                     <td>
-                        <SELECT name="cpt_custom_tax[]" tabindex="24">
+                        <SELECT name="cpt_custom_tax[]" tabindex="25">
                             <OPTION value="0" <?php If (isset($cpt_tax_hierarchical)) { If ($cpt_tax_hierarchical == 0) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>False</OPTION>
                             <OPTION value="1" <?php If (isset($cpt_tax_hierarchical)) { If ($cpt_tax_hierarchical == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
                         </SELECT> <a href="#" title="Whether the taxonomy is hierarchical" style="cursor: help;">?</a> (default: False)
@@ -581,7 +740,7 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <tr valign="top">
                     <th scope="row"><?php _e('Show UI', 'cpt-plugin') ?></th>
                     <td>
-                        <SELECT name="cpt_custom_tax[]" tabindex="25">
+                        <SELECT name="cpt_custom_tax[]" tabindex="26">
                             <OPTION value="0" <?php If (isset($cpt_tax_showui)) { If ($cpt_tax_showui == 0 && $cpt_tax_showui != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
                             <OPTION value="1" <?php If (isset($cpt_tax_showui)) { If ($cpt_tax_showui == 1 || is_null($cpt_tax_showui)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
                         </SELECT> <a href="#" title="Whether to generate a default UI for managing this custom taxonomy" style="cursor: help;">?</a> (default: True)
@@ -591,7 +750,7 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <tr valign="top">
                     <th scope="row"><?php _e('Query Var', 'cpt-plugin') ?></th>
                     <td>
-                        <SELECT name="cpt_custom_tax[]" tabindex="26">
+                        <SELECT name="cpt_custom_tax[]" tabindex="27">
                             <OPTION value="0" <?php If (isset($cpt_tax_query_var)) { If ($cpt_tax_query_var == 0 && $cpt_tax_query_var != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
                             <OPTION value="1" <?php If (isset($cpt_tax_query_var)) { If ($cpt_tax_query_var == 1 || is_null($cpt_tax_query_var)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
                         </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
@@ -601,7 +760,7 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                     <tr valign="top">
                     <th scope="row"><?php _e('Rewrite', 'cpt-plugin') ?></th>
                     <td>
-                        <SELECT name="cpt_custom_tax[]" tabindex="27">
+                        <SELECT name="cpt_custom_tax[]" tabindex="28">
                             <OPTION value="0" <?php If (isset($cpt_tax_rewrite)) { If ($cpt_tax_rewrite == 0 && $cpt_tax_rewrite != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
                             <OPTION value="1" <?php If (isset($cpt_tax_rewrite)) { If ($cpt_tax_rewrite == 1 || is_null($cpt_tax_rewrite)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
                         </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
@@ -611,15 +770,37 @@ If (isset($_GET['cpt_error']) && $_GET['cpt_error']==1) { ?>
                 </table>
                 
                 <p class="submit">
-                	<input type="submit" class="button-primary" tabindex="28" name="cpt_add_tax" value="<?php _e($cpt_tax_submit_name, 'cpt-plugin') ?>" />
+                	<input type="submit" class="button-primary" tabindex="29" name="cpt_add_tax" value="<?php _e($cpt_tax_submit_name, 'cpt-plugin') ?>" />
                 </p>
             </form>
         </td>
 	</tr>
 </table>
 </div>
-<p class="cp_about"><a target="_blank" href="http://webdevstudios.com/support/forum/custom-post-type-ui/">Custom Post Type UI</a> v<?php echo CPT_VERSION; ?> - <?php _e( 'Copyright', 'collabpress' ) ?> &copy; 2010 - <a href="http://webdevstudios.com/support/forum/custom-post-type-ui/" target="_blank">Please Report Bugs</a> &middot; Follow on Twitter: <a href="http://twitter.com/williamsba" target="_blank">Brad</a> &middot; <a href="http://twitter.com/webdevstudios" target="_blank">WDS</a></p>
-<?php
+<?php 
+//load footer
+cpt_footer();
+
+}
+
+function cpt_footer() {
+	?>
+	<p class="cp_about"><a target="_blank" href="http://webdevstudios.com/support/forum/custom-post-type-ui/">Custom Post Type UI</a> v<?php echo CPT_VERSION; ?> - <a href="http://webdevstudios.com/support/forum/custom-post-type-ui/" target="_blank">Please Report Bugs</a> &middot; Follow on Twitter: <a href="http://twitter.com/williamsba" target="_blank">Brad</a> &middot; <a href="http://twitter.com/webdevstudios" target="_blank">WDS</a></p>
+	<?php
+}
+
+function cpt_check_return($return) {
+	global $CPT_URL;
+	
+	If($return=='cpt') {
+		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_cpt');
+	}Elseif($return=='tax'){
+		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_taxonomies');
+	}Elseif($return=='add') {
+		return clean_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	}Else{
+		return $CPT_URL;
+	}
 }
 
 function disp_boolean($booText) {
@@ -628,5 +809,17 @@ function disp_boolean($booText) {
 	}Else{
 		return 'true';
 	}
+}
+
+function curPageURL() {
+ $pageURL = 'http';
+ if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+ $pageURL .= "://";
+ if ($_SERVER["SERVER_PORT"] != "80") {
+  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+ } else {
+  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+ }
+ return $pageURL;
 }
 ?>

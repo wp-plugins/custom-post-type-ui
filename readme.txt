@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.2.1
+Stable tag: 0.3
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -27,6 +27,11 @@ Below is a short example video showing Custom Post Type UI in action!
 
 == Changelog ==
 
+= 0.3 =
+* added new menu/submenus for individual sections
+* added support for 'title' and 'editor' in CPT Supports field
+* added Singular Label for custom taxonomies (props sleary)
+
 = 0.2.1 =
 * Set default Query Var setting to False
 
@@ -45,6 +50,11 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.3 =
+* added new menu/submenus for individual sections
+* added support for 'title' and 'editor' in CPT Supports field
+* added Singular Label for custom taxonomies (props sleary)
 
 = 0.2.1 =
 * Set default Query Var setting to False
