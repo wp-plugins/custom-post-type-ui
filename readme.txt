@@ -80,6 +80,10 @@ Below is a short example video showing Custom Post Type UI in action!
 
 That's it! Now you can easily start creating custom post types and taxonomies in WordPress
 
+Upgrading
+
+If you are upgrading from a version prior to v0.3 you will need to delete and recreate any custom taxonomies that you previously created.  You will NOT lose any content added to those custom taxonomies.
+
 == Frequently Asked Questions ==
 
 = Will this work in previous version of WordPress =
