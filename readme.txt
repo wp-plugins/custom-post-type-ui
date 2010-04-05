@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.3
+Stable tag: 0.4
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -12,7 +12,7 @@ Admin UI for creating custom post types and custom taxonomies in WordPress
 
 This plugin provides an easy to use interface to create and administer custom post types in WordPress.  Plugin can also create custom taxonomies.  This plugin is created for WordPress 3.0.  
 
-You can easily install WP 3.0-alpha using the WordPress Beta Tester plugin located here: http://wordpress.org/extend/plugins/wordpress-beta-tester/
+You can easily install WP 3.0 beta using the WordPress Beta Tester plugin located here: http://wordpress.org/extend/plugins/wordpress-beta-tester/
 
 Below is a short example video showing Custom Post Type UI in action!
 [vimeo http://vimeo.com/10187055]
@@ -26,6 +26,11 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.4 =
+* Default view now hides advanced options
+* Get Code link to easily copy/paste code used to create custom post types and taxonomies
+* Added support for 'author' and 'page-attributes' in CPT Supports field
 
 = 0.3.1 =
 * Fixed multiple warnings and errors
@@ -53,6 +58,11 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.4 =
+* Default view now hides advanced options
+* Get Code link to easily copy/paste code used to create custom post types and taxonomies
+* Added support for 'author' and 'page-attributes' in CPT Supports field
 
 = 0.3.1 =
 * Fixed multiple warnings and errors
