@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.4
+Stable tag: 0.4.1
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -26,6 +26,10 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.4.1 =
+* Fixed bug with REWRITE and QUERY_VAR values not executing correctly
+* Set REWRITE and QUERY_VAR values to True by default
 
 = 0.4 =
 * Default view now hides advanced options
@@ -58,6 +62,9 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.4.1 =
+* Fixed bug with REWRITE and QUERY_VAR values not executing correctly
 
 = 0.4 =
 * Default view now hides advanced options

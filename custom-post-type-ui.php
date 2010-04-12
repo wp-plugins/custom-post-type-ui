@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.4
+Version: 0.4.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.4' );
+define( 'CPT_VERSION', '0.4.1' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
 $CPT_URL = curPageURL();
@@ -24,7 +24,11 @@ add_action( 'admin_init', 'cpt_delete_post_type' );
 add_action( 'admin_init', 'cpt_register_settings' );
 
 //process custom taxonomies if they exist
+add_action( 'init', 'cpt_create_custom_post_types', 0 );
+
+//process custom taxonomies if they exist
 add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
+
 
 function cpt_plugin_menu() {
 	//create custom post type menu
@@ -64,32 +68,33 @@ function cpt_wp_add_styles() {
     <?php
 }
 
-//register custom post types
-$cpt_post_types = get_option('cpt_custom_post_types');
-
-//check if option value is an Array before proceeding
-If (is_array($cpt_post_types)) {
-	foreach ($cpt_post_types as $cpt_post_type) {
-
-		If (!$cpt_post_type[1]) {
-			$cpt_label = esc_html($cpt_post_type[0]);
-		}Else{
-			$cpt_label = esc_html($cpt_post_type[1]);
-		}
-
-		register_post_type( $cpt_post_type[0], array(	'label' => __($cpt_label),
-			'public' => $cpt_post_type[2],
-			'show_ui' => $cpt_post_type[3],
-			'_edit_link' => $cpt_post_type[4],
-			'capability_type' => $cpt_post_type[5],
-			'hierarchical' => $cpt_post_type[6],
-			'rewrite' => false,
-			'query_var' => $cpt_post_type[8],
-			'supports' => $cpt_post_type[9]
-		) );
-	}	
+function cpt_create_custom_post_types() {
+	//register custom post types
+	$cpt_post_types = get_option('cpt_custom_post_types');
+	
+	//check if option value is an Array before proceeding
+	If (is_array($cpt_post_types)) {
+		foreach ($cpt_post_types as $cpt_post_type) {
+	
+			If (!$cpt_post_type[1]) {
+				$cpt_label = esc_html($cpt_post_type[0]);
+			}Else{
+				$cpt_label = esc_html($cpt_post_type[1]);
+			}
+	
+			register_post_type( $cpt_post_type[0], array(	'label' => __($cpt_label),
+				'public' => disp_boolean($cpt_post_type[2]),
+				'show_ui' => disp_boolean($cpt_post_type[3]),
+				'_edit_link' => $cpt_post_type[4],
+				'capability_type' => $cpt_post_type[5],
+				'hierarchical' => $cpt_post_type[6],
+				'rewrite' => disp_boolean($cpt_post_type[7]),
+				'query_var' => disp_boolean($cpt_post_type[8]),
+				'supports' => $cpt_post_type[9]
+			) );
+		}	
+	}
 }
-
 
 
 function cpt_create_custom_taxonomies() {
@@ -116,11 +121,11 @@ function cpt_create_custom_taxonomies() {
 			//register our custom taxonomies
 			register_taxonomy( $cpt_tax_type[0], 
 				$cpt_tax_type[3], 
-				array( 'hierarchical' => $cpt_tax_type[4], 
+				array( 'hierarchical' => disp_boolean($cpt_tax_type[4]), 
 				'label' => $cpt_label, 
-				'show_ui' => $cpt_tax_type[5], 
-				'query_var' => $cpt_tax_type[6], 
-				'rewrite' => $cpt_tax_type[7], 
+				'show_ui' => disp_boolean($cpt_tax_type[5]), 
+				'query_var' => disp_boolean($cpt_tax_type[6]), 
+				'rewrite' => disp_boolean($cpt_tax_type[7]), 
 				'singular_label' => $cpt_singular_label 
 			) );
 
@@ -413,7 +418,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 			$edit_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($edit_url, 'cpt_edit_post_type') : $edit_url;
 		?>
         	<tr>
-            	<td valign="top"><a href="<?php echo $del_url; ?>">Delete</a> / <a href="<?php echo $edit_url; ?>">Edit</a> / <a href="#" class="comment_button" id="<?php echo $thecounter; ?>">Get Code</a></td>
+            	<td valign="top"><a href="<?php echo $del_url; ?>">Delete</a> / <a href="<?php echo $edit_url; ?>">Edit</a> <!--/ <a href="#" class="comment_button" id="<?php echo $thecounter; ?>">Get Code</a>--></td>
             	<td valign="top"><?php echo stripslashes($cpt_post_type[0]); ?></td>
                 <td valign="top"><?php echo stripslashes($cpt_post_type[1]); ?></td>
                 <td valign="top"><?php echo disp_boolean($cpt_post_type[2]); ?></td>
@@ -453,15 +458,15 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 								$cpt_support_array .= '\''.$cpt_supports.'\',';
 							}
 						}
-				
+						
 						$custom_post_type = 'register_post_type(\'' .$cpt_post_type[0]. '\', array(	\'label\' => \''.__($cpt_label).'\',';
-						$custom_post_type .= 	'\'public\' => \''.$cpt_post_type[2].'\',';
-						$custom_post_type .= 	'\'show_ui\' => \''.$cpt_post_type[3].'\',';
+						$custom_post_type .= 	'\'public\' => \''.disp_boolean($cpt_post_type[2]).'\',';
+						$custom_post_type .= 	'\'show_ui\' => \''.disp_boolean($cpt_post_type[3]).'\',';
 						$custom_post_type .= 	'\'_edit_link\' => \''.$cpt_post_type[4].'\',';
 						$custom_post_type .= 	'\'capability_type\' => \''.$cpt_post_type[5].'\',';
-						$custom_post_type .= 	'\'hierarchical\' => \''.$cpt_post_type[6].'\',';
-						$custom_post_type .= 	'\'rewrite\' => false,';
-						$custom_post_type .= 	'\'query_var\' => \''.$cpt_post_type[8].'\',';
+						$custom_post_type .= 	'\'hierarchical\' => \''.disp_boolean($cpt_post_type[6]).'\',';
+						$custom_post_type .= 	'\'rewrite\' => \'' .disp_boolean($cpt_post_type[7]). '\',';
+						$custom_post_type .= 	'\'query_var\' => \''. disp_boolean($cpt_post_type[8]).'\',';
 						$custom_post_type .= 	'\'supports\' => array(' .$cpt_support_array.')';
 						$custom_post_type .= ') );';
 						
@@ -531,7 +536,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 			$edit_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($edit_url, 'cpt_edit_tax') : $edit_url;
 		?>
         	<tr>
-            	<td valign="top"><a href="<?php echo $del_url; ?>">Delete</a> / <a href="<?php echo $edit_url; ?>">Edit</a> / <a href="#" class="comment_button" id="<?php echo $thecounter; ?>">Get Code</a></td>
+            	<td valign="top"><a href="<?php echo $del_url; ?>">Delete</a> / <a href="<?php echo $edit_url; ?>">Edit</a><!-- / <a href="#" class="comment_button" id="<?php echo $thecounter; ?>">Get Code</a>--></td>
             	<td valign="top"><?php echo stripslashes($cpt_tax_type[0]); ?></td>
                 <td valign="top"><?php echo stripslashes($cpt_tax_type[1]); ?></td>
                 <td valign="top"><?php echo stripslashes($cpt_tax_type[2]); ?></td>
@@ -569,11 +574,11 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
                                 //register our custom taxonomies
                                 $custom_tax = 'register_taxonomy(\'' .$cpt_tax_type[0]. '\','; 
                                 $custom_tax .= '\''.$cpt_tax_type[3] .'\','; 
-                                $custom_tax .= 'array( \'hierarchical\' => '.$cpt_tax_type[4].', ';
+                                $custom_tax .= 'array( \'hierarchical\' => '.disp_boolean($cpt_tax_type[4]).', ';
                                 $custom_tax .= 	'\'label\' => \''.$cpt_label.'\','; 
-                                $custom_tax .= 	'\'show_ui\' => \''.$cpt_tax_type[5].'\','; 
-                                $custom_tax .= 	'\'query_var\' => \''.$cpt_tax_type[6].'\','; 
-                                $custom_tax .= 	'\'rewrite\' => \''.$cpt_tax_type[7].'\','; 
+                                $custom_tax .= 	'\'show_ui\' => \''.disp_boolean($cpt_tax_type[5]).'\','; 
+                                $custom_tax .= 	'\'query_var\' => \''. disp_boolean($cpt_tax_type[6]).'\','; 
+                                $custom_tax .= 	'\'rewrite\' => \''.disp_boolean($cpt_tax_type[7]).'\','; 
                                 $custom_tax .= 	'\'singular_label\' => \''.$cpt_singular_label.'\''; 
                                 $custom_tax .= ') );';
                                 
@@ -776,9 +781,9 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                     <th scope="row"><?php _e('Rewrite', 'cpt-plugin') ?></th>
                     <td>
                         <SELECT name="cpt_custom_post_type[]" tabindex="8">
-                            <OPTION value="0" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 0) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>False</OPTION>
-                            <OPTION value="1" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
-                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
+                            <OPTION value="0" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 0 && $cpt_rewrite != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
+                            <OPTION value="1" <?php If (isset($cpt_rewrite)) { If ($cpt_rewrite == 1 || is_null($cpt_rewrite)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
+                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
                     </td>
                     </tr>
             
@@ -786,9 +791,9 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                     <th scope="row"><?php _e('Query Var', 'cpt-plugin') ?></th>
                     <td>
                         <SELECT name="cpt_custom_post_type[]" tabindex="9">
-                            <OPTION value="0" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 0) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>False</OPTION>
-                            <OPTION value="1" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 1) { echo 'selected="selected"'; } } ?>>True</OPTION>
-                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: False)
+                            <OPTION value="0" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 0 && $cpt_query_var != '') { echo 'selected="selected"'; } } ?>>False</OPTION>
+                            <OPTION value="1" <?php If (isset($cpt_query_var)) { If ($cpt_query_var == 1 || is_null($cpt_query_var)) { echo 'selected="selected"'; } }Else{ echo 'selected="selected"'; } ?>>True</OPTION>
+                        </SELECT> <a href="#" title="" style="cursor: help;">?</a> (default: True)
                     </td>
                     </tr>
             
@@ -942,9 +947,9 @@ function cpt_check_return($return) {
 
 function disp_boolean($booText) {
 	If ($booText == '0') {
-		return 'false';
+		return false;
 	}Else{
-		return 'true';
+		return true;
 	}
 }
 
