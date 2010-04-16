@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.4.1
+Stable tag: 0.5
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -26,6 +26,14 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.5 =
+* Updated post-thumbnails to thumbnail in CPT Support field
+* Added singular_label option for custom post types
+* Added support for custom Rewrite slugs for post types and taxonomies
+* Reworked entire array structure for easier additions down the road
+* Fixed Get Code bug in Custom Post Types and Custom Taxonomies
+* View additional custom post types registered in WordPress
 
 = 0.4.1 =
 * Fixed bug with REWRITE and QUERY_VAR values not executing correctly
@@ -62,6 +70,10 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.5 =
+* Fixed multiple bugs 
+* If upgrading from pre 0.5 version you will need to recreate your custom post types
 
 = 0.4.1 =
 * Fixed bug with REWRITE and QUERY_VAR values not executing correctly
@@ -105,9 +117,19 @@ That's it! Now you can easily start creating custom post types and taxonomies in
 
 Upgrading
 
+If you are upgrading from a version prior to v0.5 you will need to delete and recreate any custom post types that you previously created.  You will NOT lose any content added to those custom post types.
+
 If you are upgrading from a version prior to v0.3 you will need to delete and recreate any custom taxonomies that you previously created.  You will NOT lose any content added to those custom taxonomies.
 
 == Frequently Asked Questions ==
+
+= I upgraded the plugin and all of my custom post types broke =
+
+v0.5 reworked how custom post types are stored.  You need to delete and recreate your post types.  You will NOT lose any content by doing this.
+
+= I receive a 404 error when viewing custom post type content =
+
+This is usually caused if the rewrite slug was changed.  To fix this issue simply visit Settings > Permalinks to flush the rewrite rules in WordPress
 
 = Will this work in previous version of WordPress =
 
