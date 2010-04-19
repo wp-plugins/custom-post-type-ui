@@ -27,6 +27,9 @@ Below is a short example video showing Custom Post Type UI in action!
 
 == Changelog ==
 
+= 0.5.1 =
+* Added flush_rewrite_rules() to reset rules when using custom rewrite slugs
+
 = 0.5 =
 * Updated post-thumbnails to thumbnail in CPT Support field
 * Added singular_label option for custom post types
@@ -70,6 +73,9 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.5.1 =
+* Added flush_rewrite_rules() to reset rules when using custom rewrite slugs
 
 = 0.5 =
 * Fixed multiple bugs 

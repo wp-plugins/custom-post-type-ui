@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.5
+Version: 0.5.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.5' );
+define( 'CPT_VERSION', '0.5.1' );
 // Define plugin URL constant
 define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
 $CPT_URL = curPageURL();
@@ -232,7 +232,7 @@ function cpt_register_settings() {
 			}Else{
 				$RETURN_URL = $CPT_URL;
 			}
-	
+			
 			wp_redirect($RETURN_URL);
 
 		}
@@ -390,6 +390,9 @@ function cpt_manage_cpt() {
 	global $CPT_URL;
 	
 	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	
+	//flush rewrite rules
+	flush_rewrite_rules();
 ?>
 <div class="wrap">
 <?php
@@ -560,6 +563,9 @@ function cpt_manage_taxonomies() {
 	global $CPT_URL;
 	
 	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	
+	//flush rewrite rules
+	flush_rewrite_rules();
 ?>
 <div class="wrap">
 <?php
@@ -736,6 +742,10 @@ If (isset($_GET['edittax']) && !isset($_GET['cpt_edit'])) {
 }Else{
 	$cpt_tax_submit_name = 'Create Custom Taxonomy';
 }
+
+//flush rewrite rules
+flush_rewrite_rules();
+
 ?><div class="wrap"><?php
 //check for success/error messages
 If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
