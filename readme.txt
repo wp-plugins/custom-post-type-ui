@@ -1,10 +1,10 @@
 === Custom Post Type UI ===
 Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
-Tags: custom post types, CMS, post, types, cck, taxonomy, tax
+Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.5
+Stable tag: 0.5.2
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -26,6 +26,9 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.5.2 =
+* Updated excerpts to excerpt in CPT Support field (props vlad27aug)
 
 = 0.5.1 =
 * Added flush_rewrite_rules() to reset rules when using custom rewrite slugs
@@ -73,6 +76,9 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.5.2 =
+* Updated excerpts to excerpt in CPT Support field (props vlad27aug)
 
 = 0.5.1 =
 * Added flush_rewrite_rules() to reset rules when using custom rewrite slugs
