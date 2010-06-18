@@ -4,15 +4,13 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.5.2
+Stable tag: 0.6
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
 == Description ==
 
-This plugin provides an easy to use interface to create and administer custom post types in WordPress.  Plugin can also create custom taxonomies.  This plugin is created for WordPress 3.0.  
-
-You can easily install WP 3.0 beta using the WordPress Beta Tester plugin located here: http://wordpress.org/extend/plugins/wordpress-beta-tester/
+This plugin provides an easy to use interface to create and administer custom post types and taxonomies in WordPress.  This plugin is created for WordPress 3.0.  
 
 Below is a short example video showing Custom Post Type UI in action!
 [vimeo http://vimeo.com/10187055]
@@ -26,6 +24,14 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.6 =
+* Added support for custom labels with custom post types and taxonomies
+* Added ability to assign built-in taxonomies to custom post types
+* Added ability to assign custom taxonomies to multiple post types
+* Fixed jQuery conflict with other plugins (props shadyvb)
+* Managing post types now displays total published/draft per type
+* Code optimization and cleanup
 
 = 0.5.2 =
 * Updated excerpts to excerpt in CPT Support field (props vlad27aug)
@@ -76,6 +82,14 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.6 =
+* Added support for custom labels with custom post types and taxonomies
+* Added ability to assign built-in taxonomies to custom post types
+* Added ability to assign custom taxonomies to multiple post types
+* Fixed jQuery conflict with other plugins (props shadyvb)
+* Managing post types now displays total published/draft per type
+* Code optimization and cleanup
 
 = 0.5.2 =
 * Updated excerpts to excerpt in CPT Support field (props vlad27aug)
@@ -134,6 +148,10 @@ If you are upgrading from a version prior to v0.5 you will need to delete and re
 If you are upgrading from a version prior to v0.3 you will need to delete and recreate any custom taxonomies that you previously created.  You will NOT lose any content added to those custom taxonomies.
 
 == Frequently Asked Questions ==
+
+= I changed my custom post type name and now I can't get to my posts =
+
+You can either change the custom post type name back to the original name or try the Post Type Switcher plugin here: http://wordpress.org/extend/plugins/post-type-switcher/
 
 = I upgraded the plugin and all of my custom post types broke =
 
