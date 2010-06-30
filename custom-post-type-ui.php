@@ -4,16 +4,18 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.6
+Version: 0.6.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.6' );
+define( 'CPT_VERSION', '0.6.1' );
 
 // Define plugin URL constant
-define( 'CPT_URL', get_option('siteurl') . '/wp-admin/options-general.php?page=custom-post-type-ui/custom-post-type-ui.php' );
-$CPT_URL = curPageURL();
+$CPT_URL = cpt_check_return( 'add' );
+
+//load translated strings
+load_plugin_textdomain( 'cpt-plugin', false, 'custom-post-type-ui/languages' );
 
 // create custom plugin settings menu
 add_action('admin_menu', 'cpt_plugin_menu');
@@ -30,20 +32,19 @@ add_action( 'init', 'cpt_create_custom_post_types', 0 );
 //process custom taxonomies if they exist
 add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
 
-
 function cpt_plugin_menu() {
 	//create custom post type menu
-	add_menu_page('Custom Post Types', 'Custom Post Types', 'administrator', __FILE__, 'cpt_settings');
+	add_menu_page('Custom Post Types', 'Custom Post Types', 'administrator', 'cpt_main_menu', 'cpt_settings');
 
 	//create submenu items
-	add_submenu_page(__FILE__, 'Add New', 'Add New', 'administrator', __FILE__.'_cpt_add_new', 'cpt_add_new');
-	add_submenu_page(__FILE__, 'Manage Post Types', 'Manage Post Types', 'administrator', __FILE__.'_cpt_manage_cpt', 'cpt_manage_cpt');
-	add_submenu_page(__FILE__, 'Manage Taxonomies', 'Manage Taxonomies', 'administrator', __FILE__.'_cpt_manage_taxonomies', 'cpt_manage_taxonomies');
+	add_submenu_page('cpt_main_menu', 'Add New', 'Add New', 'administrator', 'cpt_sub_add_new', 'cpt_add_new');
+	add_submenu_page('cpt_main_menu', 'Manage Post Types', 'Manage Post Types', 'administrator', 'cpt_sub_manage_cpt', 'cpt_manage_cpt');
+	add_submenu_page('cpt_main_menu', 'Manage Taxonomies', 'Manage Taxonomies', 'administrator', 'cpt_sub_manage_taxonomies', 'cpt_manage_taxonomies');
 }
 
 //temp fix, should do: http://planetozh.com/blog/2008/04/how-to-load-javascript-with-your-wordpress-plugin/
 //only load JS if on a CPT page
-If ( strpos($_SERVER['REQUEST_URI'], 'custom-post-type')>0 ) {
+If ( strpos($_SERVER['REQUEST_URI'], 'cpt')>0 ) {
 	add_action( 'admin_head', 'cpt_wp_add_styles' );
 }
 // Add JS Scripts
@@ -257,7 +258,7 @@ function cpt_register_settings() {
 				$RETURN_URL = $CPT_URL;
 			}
 
-			wp_redirect($RETURN_URL .'&bwar=1');
+			wp_redirect($RETURN_URL);
 
 		}
 
@@ -423,7 +424,7 @@ function cpt_settings() {
         <h3><?php _e('Slightly Outdated Demo Video', 'cpt-plugin'); ?></h3>
         <object width="400" height="300"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="300"></embed></object>
     </div>
-<?
+<?php
 //load footer
 cpt_footer();
 }
@@ -432,7 +433,7 @@ cpt_footer();
 function cpt_manage_cpt() {
 	global $CPT_URL;
 
-	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	$MANAGE_URL = cpt_check_return( 'add' );
 
 	//flush rewrite rules
 	flush_rewrite_rules();
@@ -471,7 +472,8 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 		$thecounter=0;
 		$cpt_names = array();
 		foreach ($cpt_post_types as $cpt_post_type) {
-			$del_url = $CPT_URL .'&deltype=' .$thecounter .'&return=cpt';
+
+			$del_url = cpt_check_return( 'cpt' ) .'&deltype=' .$thecounter .'&return=cpt';
 			$del_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($del_url, 'cpt_delete_post_type') : $del_url;
 
 			$edit_url = $MANAGE_URL .'&edittype=' .$thecounter .'&return=cpt';
@@ -643,7 +645,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
 function cpt_manage_taxonomies() {
 	global $CPT_URL;
 
-	$MANAGE_URL = esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+	$MANAGE_URL = cpt_check_return( 'add' );
 
 	//flush rewrite rules
 	flush_rewrite_rules();
@@ -680,7 +682,8 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']=='del') { ?>
         <?php
 		$thecounter=0;
 		foreach ($cpt_tax_types as $cpt_tax_type) {
-			$del_url = $CPT_URL .'&deltax=' .$thecounter .'&return=tax';
+
+			$del_url = cpt_check_return( 'cpt' ) .'&deltax=' .$thecounter .'&return=tax';
 			$del_url = ( function_exists('wp_nonce_url') ) ? wp_nonce_url($del_url, 'cpt_delete_tax') : $del_url;
 
 			$edit_url = $MANAGE_URL .'&edittax=' .$thecounter .'&return=tax';
@@ -775,9 +778,9 @@ function cpt_add_new() {
 	global $cpt_error, $CPT_URL;
 
 	If (isset($_GET['return'])) {
-		$RETURN_URL = cpt_check_return(esc_attr($_GET['return']));
+		$RETURN_URL = 'action="' .cpt_check_return(esc_attr($_GET['return'])). '"';
 	}Else{
-		$RETURN_URL = $CPT_URL;
+		$RETURN_URL = '';
 	}
 
 
@@ -875,12 +878,12 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
 	<tr>
     	<td width="50%" valign="top">
 			<?php If (isset($_GET['edittype'])) { ?>
-                <h2><?php _e('Edit Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Edit Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo cpt_check_return( 'add' ); ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php }Else{ ?>
-                <h2><?php _e('Create New Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Create New Custom Post Type', 'cpt-plugin') ?> &middot; <a href="<?php echo cpt_check_return( 'add' ); ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php } ?>
             <p><?php _e('If you are unfamiliar with the options below only fill out the <strong>Post Type Name</strong> and <strong>Label</strong> fields and check which meta boxes to support.  The other settings are set to the most common defaults for custom post types.', 'cpt-plugin'); ?></p>
-            <form method="post" action="<?php echo $RETURN_URL; ?>">
+            <form method="post" <?php echo $RETURN_URL; ?>>
                 <?php if ( function_exists('wp_nonce_field') )
                     wp_nonce_field('cpt_add_custom_post_type'); ?>
                 <?php If (isset($_GET['edittype'])) { ?>
@@ -900,6 +903,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                    <tr valign="top">
                     <th scope="row"><?php _e('Singular Label', 'cpt-plugin') ?></th>
                     <td><input type="text" name="cpt_custom_post_type[singular_label]" tabindex="3" value="<?php If (isset($cpt_singular_label)) { echo esc_attr($cpt_singular_label); } ?>" /> <a href="#" title="Custom Post Type Singular label.  Used in WordPress when a singular label is needed." style="cursor: help;">?</a> (e.g. Movie)</td>
+
                     </tr>
 
                    <tr valign="top">
@@ -1092,12 +1096,12 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
 			$cpt_options = get_option('cpt_custom_tax_types');
 			?>
 			<?php If (isset($_GET['edittax'])) { ?>
-                <h2><?php _e('Edit Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Edit Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo cpt_check_return( 'add' ); ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php }Else{ ?>
-                <h2><?php _e('Create Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo $CPT_URL; ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
+                <h2><?php _e('Create Custom Taxonomy', 'cpt-plugin') ?> &middot; <a href="<?php echo cpt_check_return( 'add' ); ?>"><?php _e('Reset', 'cpt-plugin');?></a></h2>
             <?php } ?>
         	<p><?php _e('If you are unfamiliar with the options below only fill out the <strong>Taxonomy Name</strong> and <strong>Post Type Name</strong> fields.  The other settings are set to the most common defaults for custom taxonomies.', 'cpt-plugin');?></p>
-            <form method="post" action="<?php echo $RETURN_URL; ?>">
+            <form method="post" <?php echo $RETURN_URL; ?>>
                 <?php if ( function_exists('wp_nonce_field') )
                     wp_nonce_field('cpt_add_custom_taxonomy'); ?>
                 <?php If (isset($_GET['edittax'])) { ?>
@@ -1289,13 +1293,13 @@ function cpt_check_return($return) {
 	global $CPT_URL;
 
 	If($return=='cpt') {
-		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_cpt');
+		return ( $_GET['return'] ) ? admin_url('admin.php?page=cpt_sub_manage_cpt&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_cpt');
 	}Elseif($return=='tax'){
-		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_manage_taxonomies');
+		return ( $_GET['return'] ) ? admin_url('admin.php?page=cpt_sub_manage_taxonomies&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_taxonomies');
 	}Elseif($return=='add') {
-		return esc_url(get_option('siteurl').'/wp-admin/admin.php?page=custom-post-type-ui/custom-post-type-ui.php_cpt_add_new');
+		return admin_url('admin.php?page=cpt_sub_add_new');
 	}Else{
-		return $CPT_URL;
+		return admin_url('admin.php?page=cpt_sub_add_new');
 	}
 }
 
@@ -1313,17 +1317,5 @@ function disp_boolean($booText) {
 	}Else{
 		return 'true';
 	}
-}
-
-function curPageURL() {
-	$pageURL = 'http';
-	if (!empty($_SERVER['HTTPS'])) {$pageURL .= "s";}  
-		$pageURL .= "://";
-	if ($_SERVER["SERVER_PORT"] != "80") {
-		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-	} else {
-		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-	}
-	return $pageURL;
 }
 ?>

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 0.6
+Stable tag: 0.6.1
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -12,7 +12,7 @@ Admin UI for creating custom post types and custom taxonomies in WordPress
 
 This plugin provides an easy to use interface to create and administer custom post types and taxonomies in WordPress.  This plugin is created for WordPress 3.0.  
 
-Below is a short example video showing Custom Post Type UI in action!
+Below is a slightly outdated example video showing Custom Post Type UI in action!
 [vimeo http://vimeo.com/10187055]
 
 == Screenshots ==
@@ -24,6 +24,13 @@ Below is a short example video showing Custom Post Type UI in action!
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.6.1 =
+* Added translation functionality and .pot file
+* Added Japanese translation
+* Reworked entire path structure fixing "page not found" errors
+* Fixed "First argument is expected to be a valid callback" error
+* Random bug fixes
 
 = 0.6 =
 * Added support for custom labels with custom post types and taxonomies
@@ -82,6 +89,13 @@ Below is a short example video showing Custom Post Type UI in action!
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.6.1 =
+* Added translation functionality and .pot file
+* Added Japanese translation
+* Reworked entire path structure fixing "page not found" errors
+* Fixed "First argument is expected to be a valid callback" error
+* Random bug fixes
 
 = 0.6 =
 * Added support for custom labels with custom post types and taxonomies
@@ -148,6 +162,10 @@ If you are upgrading from a version prior to v0.5 you will need to delete and re
 If you are upgrading from a version prior to v0.3 you will need to delete and recreate any custom taxonomies that you previously created.  You will NOT lose any content added to those custom taxonomies.
 
 == Frequently Asked Questions ==
+
+= How can I add custom meta boxes to my custom post types? =
+
+The Custom Field Template plugin does a great job at creating custom meta boxes and fully supports custom post types: http://wordpress.org/extend/plugins/custom-field-template/
 
 = I changed my custom post type name and now I can't get to my posts =
 
