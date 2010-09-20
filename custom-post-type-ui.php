@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios
-Version: 0.6.1
+Version: 0.6.2
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.6.1' );
+define( 'CPT_VERSION', '0.6.2' );
 
 // Define plugin URL constant
 $CPT_URL = cpt_check_return( 'add' );
@@ -27,10 +27,10 @@ add_action( 'admin_init', 'cpt_delete_post_type' );
 add_action( 'admin_init', 'cpt_register_settings' );
 
 //process custom taxonomies if they exist
-add_action( 'init', 'cpt_create_custom_post_types', 0 );
+add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
 
 //process custom taxonomies if they exist
-add_action( 'init', 'cpt_create_custom_taxonomies', 0 );
+add_action( 'init', 'cpt_create_custom_post_types', 0 );
 
 function cpt_plugin_menu() {
 	//create custom post type menu
@@ -84,6 +84,7 @@ function cpt_create_custom_post_types() {
 			$cpt_rewrite_slug = ( !$cpt_post_type["rewrite_slug"] ) ? esc_html($cpt_post_type["name"]) : esc_html($cpt_post_type["rewrite_slug"]);
 			$cpt_menu_position = ( !$cpt_post_type["menu_position"] ) ? null : intval($cpt_post_type["menu_position"]);
 			$cpt_taxonomies = ( !$cpt_post_type[1] ) ? array() : $cpt_post_type[1];
+			$cpt_supports = ( !$cpt_post_type[0] ) ? array() : $cpt_post_type[0];
 			
 			//set custom label values
 			$cpt_labels['name'] = $cpt_label;
@@ -105,12 +106,12 @@ function cpt_create_custom_post_types() {
 				'singular_label' => $cpt_post_type["singular_label"],
 				'show_ui' => get_disp_boolean($cpt_post_type["show_ui"]),
 				'capability_type' => $cpt_post_type["capability_type"],
-				'hierarchical' => $cpt_post_type["hierarchical"],
+				'hierarchical' => get_disp_boolean($cpt_post_type["hierarchical"]),
 				'rewrite' => array('slug' => $cpt_rewrite_slug),
 				'query_var' => get_disp_boolean($cpt_post_type["query_var"]),
 				'description' => esc_html($cpt_post_type["description"]),
 				'menu_position' => $cpt_menu_position,
-				'supports' => $cpt_post_type[0],
+				'supports' => $cpt_supports,
 				'taxonomies' => $cpt_taxonomies,
 				'labels' => $cpt_labels
 			) );
@@ -228,7 +229,8 @@ function cpt_register_settings() {
 		$cpt_form_fields = $_POST['cpt_custom_post_type'];
 
 		//add support checkbox values to array
-		array_push($cpt_form_fields, $_POST['cpt_supports']);
+		$cpt_supports = ( isset( $_POST['cpt_supports'] ) ) ? $_POST['cpt_supports'] : null;
+		array_push($cpt_form_fields, $cpt_supports);
 
 		//add taxonomies support checkbox values to array
 		$cpt_addon_taxes = ( isset( $_POST['cpt_addon_taxes'] ) ) ? $_POST['cpt_addon_taxes'] : null;
@@ -281,7 +283,8 @@ function cpt_register_settings() {
 		}
 
 		//add support checkbox values to array
-		array_push($cpt_form_fields, $_POST['cpt_supports']);
+		$cpt_supports = ( isset( $_POST['cpt_supports'] ) ) ? $_POST['cpt_supports'] : null;
+		array_push($cpt_form_fields, $cpt_supports);
 
 		//add taxonomies support checkbox values to array
 		$cpt_addon_taxes = ( isset( $_POST['cpt_addon_taxes'] ) ) ? $_POST['cpt_addon_taxes'] : null;
@@ -421,6 +424,11 @@ function cpt_settings() {
         <h2><?php _e('Custom Post Types UI', 'cpt-plugin'); ?></h2>
         <p><?php _e('Plugin version', 'cpt-plugin'); ?>: <?php echo CPT_VERSION; ?></p>
         <p><?php _e('WordPress version', 'cpt-plugin'); ?>: <?php echo get_bloginfo('version'); ?></p>
+        <h3><?php _e('Frequently Asked Questions', 'cpt-plugin'); ?></h3>
+		<p>Q: How can I add custom meta boxes to my custom post types?</p>
+		<p>A: The Custom Field Template plugin does a great job at creating custom meta boxes and fully supports custom post types: <a href="http://wordpress.org/extend/plugins/custom-field-template/" target="_blank">http://wordpress.org/extend/plugins/custom-field-template/</a></p>
+		<p>Q: I changed my custom post type name and now I can't get to my posts</p>
+        <p>A: You can either change the custom post type name back to the original name or try the Post Type Switcher plugin: <a href="http://wordpress.org/extend/plugins/post-type-switcher/" target="_blank">http://wordpress.org/extend/plugins/post-type-switcher/</a></p>
         <h3><?php _e('Slightly Outdated Demo Video', 'cpt-plugin'); ?></h3>
         <object width="400" height="300"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=10187055&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=ff9933&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="300"></embed></object>
     </div>
@@ -1056,7 +1064,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                         <input type="checkbox" name="cpt_supports[]" tabindex="15" value="custom-fields" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('custom-fields', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Custom Fields <a href="#" title="Adds the custom fields meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                         <input type="checkbox" name="cpt_supports[]" tabindex="16" value="comments" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('comments', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Comments <a href="#" title="Adds the comments meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                         <input type="checkbox" name="cpt_supports[]" tabindex="17" value="revisions" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('revisions', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Revisions <a href="#" title="Adds the revisions meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
-                        <input type="checkbox" name="cpt_supports[]" tabindex="18" value="thumbnail" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('thumbnail', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Post Thumbnails <a href="#" title="Adds the post thumbnails meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
+                        <input type="checkbox" name="cpt_supports[]" tabindex="18" value="thumbnail" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('thumbnail', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Featured Image <a href="#" title="Adds the featured image meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                         <input type="checkbox" name="cpt_supports[]" tabindex="19" value="author" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('author', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Author <a href="#" title="Adds the author meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                         <input type="checkbox" name="cpt_supports[]" tabindex="20" value="page-attributes" <?php If (isset($cpt_supports) && is_array($cpt_supports)) { If (in_array('page-attributes', $cpt_supports)) { echo 'checked="checked"'; } }Elseif (!isset($_GET['edittype'])) { echo 'checked="checked"'; }  ?> />&nbsp;Page Attributes <a href="#" title="Adds the page attribute meta box when creating content for this custom post type" style="cursor: help;">?</a> <br/ >
                     </td>
@@ -1071,7 +1079,7 @@ If (isset($_GET['cpt_msg']) && $_GET['cpt_msg']==1) { ?>
                     $output = 'objects';
                     $add_taxes = get_taxonomies($args,$output);
                     foreach ($add_taxes  as $add_tax ) {
-                        if ( $add_tax->name != 'nav_menu' && $add_tax->_builtin == 1 ) {
+                        if ( $add_tax->name != 'nav_menu' ) {
                             ?>
                             <input type="checkbox" name="cpt_addon_taxes[]" tabindex="20" value="<?php echo $add_tax->name; ?>" <?php If (isset($cpt_taxes) && is_array($cpt_taxes)) { If (in_array($add_tax->name, $cpt_taxes)) { echo 'checked="checked"'; } } ?> />&nbsp;<?php echo $add_tax->label; ?><br />
                             <?php
@@ -1285,7 +1293,7 @@ cpt_footer();
 
 function cpt_footer() {
 	?>
-	<p class="cp_about"><a target="_blank" href="http://webdevstudios.com/support/forum/custom-post-type-ui/">Custom Post Type UI</a> v<?php echo CPT_VERSION; ?> - <a href="http://webdevstudios.com/support/forum/custom-post-type-ui/" target="_blank">Please Report Bugs</a> &middot; Follow on Twitter: <a href="http://twitter.com/williamsba" target="_blank">Brad</a> &middot; <a href="http://twitter.com/webdevstudios" target="_blank">WDS</a></p>
+	<p class="cp_about"><a target="_blank" href="http://webdevstudios.com/support/forum/custom-post-type-ui/">Custom Post Type UI</a> v<?php echo CPT_VERSION; ?> - <a href="http://webdevstudios.com/support/forum/custom-post-type-ui/" target="_blank">Please Report Bugs</a> &middot; Follow on Twitter: <a href="http://twitter.com/williamsba" target="_blank">Brad</a> &middot; <a href="http://twitter.com/pluginize" target="_blank">Pluginize</a> &middot; <a href="http://twitter.com/webdevstudios" target="_blank">WDS</a></p>
 	<?php
 }
 
@@ -1293,9 +1301,9 @@ function cpt_check_return($return) {
 	global $CPT_URL;
 
 	If($return=='cpt') {
-		return ( $_GET['return'] ) ? admin_url('admin.php?page=cpt_sub_manage_cpt&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_cpt');
+		return ( isset( $_GET['return'] ) ) ? admin_url('admin.php?page=cpt_sub_manage_cpt&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_cpt');
 	}Elseif($return=='tax'){
-		return ( $_GET['return'] ) ? admin_url('admin.php?page=cpt_sub_manage_taxonomies&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_taxonomies');
+		return ( isset( $_GET['return'] ) ) ? admin_url('admin.php?page=cpt_sub_manage_taxonomies&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_taxonomies');
 	}Elseif($return=='add') {
 		return admin_url('admin.php?page=cpt_sub_add_new');
 	}Else{

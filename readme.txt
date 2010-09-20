@@ -3,8 +3,8 @@ Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
 Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
-Tested up to: 3.0
-Stable tag: 0.6.1
+Tested up to: 3.0.1
+Stable tag: 0.6.2
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -24,6 +24,13 @@ Below is a slightly outdated example video showing Custom Post Type UI in action
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.6.2 =
+* Added support for assigning custom taxonomies to post types when creating/editing
+* Fixed bug when setting hierarchy on a post type (props @JohnPBloch)
+* Fixed an error when registering a post type with no supported meta boxes
+* Fixed "Undefined index" error when determining return URLs
+* Added Chinese translation
 
 = 0.6.1 =
 * Added translation functionality and .pot file
@@ -89,6 +96,13 @@ Below is a slightly outdated example video showing Custom Post Type UI in action
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.6.2 =
+* Added support for assigning custom taxonomies to post types when creating/editing
+* Fixed bug when setting hierarchy on a post type (props @JohnPBloch)
+* Fixed an error when registering a post type with no supported meta boxes
+* Fixed "Undefined index" error when determining return URLs
+* Added Chinese translation
 
 = 0.6.1 =
 * Added translation functionality and .pot file
