@@ -87,13 +87,22 @@ function cpt_create_custom_post_types() {
 			$cpt_supports = ( !$cpt_post_type[0] ) ? array() : $cpt_post_type[0];
 			//$cpt_show_in_menu  = ( !$cpt_post_type["show_in_menu_string"] ) ? null : $cpt_post_type["show_in_menu_string"];
 
-			$cpt_show_in_menu = ( $cpt_post_type["show_in_menu"] == 1 ) ? true : false;
-			$cpt_show_in_menu = ( $cpt_post_type["show_in_menu_string"] ) ? $cpt_post_type["show_in_menu_string"] : $cpt_show_in_menu;
-			
+			if ( isset ( $cpt_post_type["show_in_menu"] ) ) {
+			    $cpt_show_in_menu = ( $cpt_post_type["show_in_menu"] == 1 ) ? true : false;
+			    $cpt_show_in_menu = ( $cpt_post_type["show_in_menu_string"] ) ? $cpt_post_type["show_in_menu_string"] : $cpt_show_in_menu;
+			}else{
+			    $cpt_show_in_menu = true;
+			}
 			//set custom label values
 			$cpt_labels['name'] = $cpt_label;
 			$cpt_labels['singular_name'] = $cpt_post_type["singular_label"];
-			$cpt_labels['menu_name'] = ( $cpt_post_type[2]["menu_name"] ) ? $cpt_post_type[2]["menu_name"] : $cpt_label;
+
+			if ( isset ( $cpt_post_type[2]["menu_name"] ) ) {
+			    $cpt_labels['menu_name'] = ( $cpt_post_type[2]["menu_name"] ) ? $cpt_post_type[2]["menu_name"] : $cpt_label;
+			}
+
+			$cpt_has_archive = ( isset ( $cpt_post_type["has_archive"] ) ) ? get_disp_boolean( $cpt_post_type["has_archive"] ) : null;
+
 			$cpt_labels['add_new'] = ( $cpt_post_type[2]["add_new"] ) ? $cpt_post_type[2]["add_new"] : 'Add ' .$cpt_singular;
 			$cpt_labels['add_new_item'] = ( $cpt_post_type[2]["add_new_item"] ) ? $cpt_post_type[2]["add_new_item"] : 'Add New ' .$cpt_singular;
 			$cpt_labels['edit'] = ( $cpt_post_type[2]["edit"] ) ? $cpt_post_type[2]["edit"] : 'Edit';
@@ -110,7 +119,7 @@ function cpt_create_custom_post_types() {
 				'public' => get_disp_boolean($cpt_post_type["public"]),
 				'singular_label' => $cpt_post_type["singular_label"],
 				'show_ui' => get_disp_boolean($cpt_post_type["show_ui"]),
-				'has_archive' => get_disp_boolean($cpt_post_type["has_archive"]),
+				'has_archive' => $cpt_has_archive,
 				'show_in_menu' => $cpt_show_in_menu,
 				'capability_type' => $cpt_post_type["capability_type"],
 				'hierarchical' => get_disp_boolean($cpt_post_type["hierarchical"]),
@@ -939,9 +948,9 @@ If (isset($_GET['edittype']) && !isset($_GET['cpt_edit'])) {
 	$cpt_supports = $cpt_options[$editType][0];
 	$cpt_taxes = $cpt_options[$editType][1];
 	$cpt_labels = $cpt_options[$editType][2];
-	$cpt_has_archive = $cpt_options[$editType]["has_archive"];
-	$cpt_show_in_menu = $cpt_options[$editType]["show_in_menu"];
-	$cpt_show_in_menu_string = $cpt_options[$editType]["show_in_menu_string"];
+	$cpt_has_archive = ( isset( $cpt_options[$editType]["has_archive"] ) ) ? $cpt_options[$editType]["has_archive"] : null;
+	$cpt_show_in_menu = ( isset( $cpt_options[$editType]["show_in_menu"] ) ) ? $cpt_options[$editType]["show_in_menu"] : null;
+	$cpt_show_in_menu_string = ( isset( $cpt_options[$editType]["show_in_menu_string"] ) ) ? $cpt_options[$editType]["show_in_menu_string"] : null;
 
 	$cpt_submit_name = 'Save Custom Post Type';
 }Else{
