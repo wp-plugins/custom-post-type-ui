@@ -4,12 +4,12 @@ Plugin Name: Custom Post Type UI
 Plugin URI: http://webdevstudios.com/support/wordpress-plugins/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios.com
-Version: 0.7
+Version: 0.7.1
 Author URI: http://webdevstudios.com/
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.7' );
+define( 'CPT_VERSION', '0.7.1' );
 
 // Define plugin URL constant
 $CPT_URL = cpt_check_return( 'add' );
@@ -477,7 +477,7 @@ function cpt_settings() {
             <a href="http://justintadlock.com/archives/2010/04/29/custom-post-types-in-wordpress" target="_blank">Custom Post Types in WordPress</a>
         </p>
         <p>Q: <strong>How can I add custom meta boxes to my custom post types?</strong></p>
-		<p>A: The Custom Field Template plugin does a great job at creating custom meta boxes and fully supports custom post types: <a href="http://wordpress.org/extend/plugins/custom-field-template/" target="_blank">http://wordpress.org/extend/plugins/custom-field-template/</a></p>
+		<p>A: The More Fields plugin does a great job at creating custom meta boxes and fully supports custom post types: <a href="http://wordpress.org/extend/plugins/more-fields/" target="_blank">http://wordpress.org/extend/plugins/more-fields/</a></p>
 		<p>Q: <strong>I changed my custom post type name and now I can't get to my posts</strong></p>
         <p>A: You can either change the custom post type name back to the original name or try the Post Type Switcher plugin: <a href="http://wordpress.org/extend/plugins/post-type-switcher/" target="_blank">http://wordpress.org/extend/plugins/post-type-switcher/</a></p>
         <h3><?php _e('Slightly Outdated Demo Video', 'cpt-plugin'); ?></h3>
@@ -1464,14 +1464,14 @@ function cpt_footer() {
 function cpt_check_return($return) {
 	global $CPT_URL;
 
-	If($return=='cpt') {
-		return ( isset( $_GET['return'] ) ) ? admin_url('admin.php?page=cpt_sub_manage_cpt&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_cpt');
-	}Elseif($return=='tax'){
-		return ( isset( $_GET['return'] ) ) ? admin_url('admin.php?page=cpt_sub_manage_taxonomies&return='.$_GET['return']) : admin_url('admin.php?page=cpt_sub_manage_taxonomies');
-	}Elseif($return=='add') {
-		return admin_url('admin.php?page=cpt_sub_add_new');
+	If( $return=='cpt' ) {
+		return ( isset( $_GET['return'] ) ) ? admin_url( 'admin.php?page=cpt_sub_manage_cpt&return=cpt' ) : admin_url( 'admin.php?page=cpt_sub_manage_cpt' );
+	}Elseif( $return=='tax' ){
+		return ( isset( $_GET['return'] ) ) ? admin_url( 'admin.php?page=cpt_sub_manage_taxonomies&return=tax' ) : admin_url( 'admin.php?page=cpt_sub_manage_taxonomies' );
+	}Elseif( $return=='add' ) {
+		return admin_url( 'admin.php?page=cpt_sub_add_new' );
 	}Else{
-		return admin_url('admin.php?page=cpt_sub_add_new');
+		return admin_url( 'admin.php?page=cpt_sub_add_new' );
 	}
 }
 

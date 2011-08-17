@@ -3,8 +3,8 @@ Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
 Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 0.7
+Tested up to: 3.2.1
+Stable tag: 0.7.1
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
 
@@ -24,6 +24,9 @@ Below is a slightly outdated example video showing Custom Post Type UI in action
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.7.1 =
+* Fixed XSS security bug (props Duck)
 
 = 0.7 =
 * WordPress 3.1 support
@@ -103,6 +106,9 @@ Below is a slightly outdated example video showing Custom Post Type UI in action
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.7.1 =
+* XSS security bug patched
 
 = 0.7 =
 * WordPress 3.1 support
@@ -187,7 +193,7 @@ That's it! Now you can easily start creating custom post types and taxonomies in
 
 = How can I add custom meta boxes to my custom post types? =
 
-The Custom Field Template plugin does a great job at creating custom meta boxes and fully supports custom post types: http://wordpress.org/extend/plugins/custom-field-template/
+The More Fields plugin does a great job at creating custom meta boxes and fully supports custom post types: http://wordpress.org/extend/plugins/more-fields/
 
 = I changed my custom post type name and now I can't get to my posts =
 
