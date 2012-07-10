@@ -3,7 +3,7 @@ Contributors: williamsba1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
 Tags: custom post types, CMS, post, types, post type, cck, taxonomy, tax
 Requires at least: 3.0
-Tested up to: 3.2.1
+Tested up to: 3.4.1
 Stable tag: 0.7.1
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
