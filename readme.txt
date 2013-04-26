@@ -1,5 +1,5 @@
 === Custom Post Type UI ===
-Contributors: williamsba1
+Contributors: williamsba1, tw2113
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3084056
 Tags: custom post types, CPT, CMS, post, types, post type, cck, taxonomy, tax, custom
 Requires at least: 3.0
@@ -160,7 +160,7 @@ Below is a slightly outdated example video showing Custom Post Type UI in action
 * Added flush_rewrite_rules() to reset rules when using custom rewrite slugs
 
 = 0.5 =
-* Fixed multiple bugs 
+* Fixed multiple bugs
 * If upgrading from pre 0.5 version you will need to recreate your custom post types
 
 = 0.4.1 =
