@@ -11,7 +11,7 @@ License: GPLv2
 */
 
 // Define current version constant
-define( 'CPT_VERSION', '0.8.1' );
+define( 'CPT_VERSION', '0.8.2' );
 
 // Define current WordPress version constant
 define( 'CPTUI_WP_VERSION', get_bloginfo( 'version' ) );
