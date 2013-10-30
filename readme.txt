@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CPT, CMS, post, types, post type, cck, taxonomy, tax, custom
 Requires at least: 3.1
 Tested up to: 3.6
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 License: GPLv2
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
@@ -26,6 +26,9 @@ All official development on this plugin is on GitHub. Version bumps will still b
 5. Custom taxonomies are automatically added to your content type screens
 
 == Changelog ==
+
+= 0.8.2 =
+* Fix with_front logic issue.
 
 = 0.8.1 =
 * Renamed menu entry to "CPT UI".
@@ -141,6 +144,9 @@ All official development on this plugin is on GitHub. Version bumps will still b
 * First beta release
 
 == Upgrade Notice ==
+
+= 0.8.2 =
+* Fixes with_front logic issue that was defaulting to true.
 
 = 0.8.1 =
 * Many bug fixes and admittedly some features. Fixes the Get Code functionality primarily.
