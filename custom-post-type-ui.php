@@ -4,7 +4,7 @@ Plugin Name: Custom Post Type UI
 Plugin URI: https://github.com/WebDevStudios/custom-post-type-ui/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
 Author: WebDevStudios.com
-Version: 1.0.1
+Version: 1.0.2
 Author URI: http://webdevstudios.com/
 Text Domain: cpt-plugin
 License: GPLv2
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPT_VERSION', '1.0.1' );
+define( 'CPT_VERSION', '1.0.2' );
 define( 'CPTUI_WP_VERSION', get_bloginfo( 'version' ) );
 
 /**
@@ -113,7 +113,7 @@ function cptui_register_single_post_type( $post_type = array() ) {
 	 * @param string $name      Post type name being registered.
 	 * @param array  $post_type All parameters for post type registration.
 	 */
-	$post_type['map_meta_cap'] = apply_filters( 'cptui_map_meta_cap', 'true', $post_type['name'], $post_type );
+	$post_type['map_meta_cap'] = apply_filters( 'cptui_map_meta_cap', true, $post_type['name'], $post_type );
 
 	/**
 	 * Filters custom supports parameters for 3rd party plugins.
@@ -160,7 +160,7 @@ function cptui_register_single_post_type( $post_type = array() ) {
 
 		$withfront = ( !empty( $post_type['rewrite_withfront'] ) ) ? disp_boolean( $post_type['rewrite_withfront'] ) : '';
 		if ( !empty( $withfront ) ) {
-			$rewrite['with_front'] = $post_type['rewrite_withfront'];
+			$rewrite['with_front'] = get_disp_boolean( $post_type['rewrite_withfront'] );
 		}
 	}
 
@@ -272,7 +272,9 @@ function cptui_register_single_taxonomy( $taxonomy = array() ) {
 	if ( in_array( $taxonomy['query_var'], array( 'true', 'false', '0', '1' ) ) ) {
 		$taxonomy['query_var'] = get_disp_boolean( $taxonomy['query_var'] );
 	}
-	$query_var_slug = ( !empty( $taxonomy['query_var_slug'] ) ) ? $taxonomy['query_var_slug'] : '';
+	if ( true === $taxonomy['query_var'] && !empty( $taxonomy['query_var_slug'] ) ) {
+		$taxonomy['query_var'] = $taxonomy['query_var_slug'];
+	}
 
 	$args = array(
 		'labels'            => $labels,
@@ -280,7 +282,6 @@ function cptui_register_single_taxonomy( $taxonomy = array() ) {
 		'hierarchical'      => get_disp_boolean( $taxonomy['hierarchical'] ),
 		'show_ui'           => get_disp_boolean( $taxonomy['show_ui'] ),
 		'query_var'         => $taxonomy['query_var'],
-		'query_var_slug'    => $query_var_slug,
 		'rewrite'           => $rewrite,
 		'show_admin_column' => get_disp_boolean( $taxonomy['show_admin_column'] )
 	);
@@ -404,7 +405,7 @@ function cptui_footer( $original = '' ) {
 	}
 
 	return sprintf(
-		__( '%s version %s by %s - %s %s &middot; %s &middot; %s &middot; %s', 'cpt-plugin' ),
+		__( '%s version %s by %s - %s %s %s &middot; %s &middot; %s', 'cpt-plugin' ),
 		sprintf(
 			'<a target="_blank" href="http://wordpress.org/support/plugin/custom-post-type-ui">%s</a>',
 			__( 'Custom Post Type UI', 'cpt-plugin' )

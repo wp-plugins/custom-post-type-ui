@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: custom post types, CPT, CMS, post, types, post type, cck, taxonomy, tax, custom
 Requires at least: 3.8
 Tested up to: 4.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2
 
 Admin UI for creating custom post types and custom taxonomies in WordPress
@@ -36,6 +36,16 @@ Implied credit to:
 9. Help/support screen.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fix issue with checked checkboxes for post type associations for taxonomies.
+* Fix "Get Code" spot related to post type associations for taxonomies.
+* Update some text strings after localization feedback.
+* Fix typos in textdomain for two spots.
+* Updating progressing translation files.
+* Fix value for with_front parameter.
+* Fix error in boolean type for map_meta_cap.
+* Fix missing use of query_var slug if present for taxonomies.
 
 = 1.0.1 =
 * Fix issues with taxonomy transfer and registration.
@@ -191,6 +201,17 @@ Implied credit to:
 * First beta release
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+* PLEASE TEST THIS UPDATE ON A DEV SITE IF YOU CAN, BEFORE UPDATING ON A LIVE SITE.
+* Fix issue with checked checkboxes for post type associations for taxonomies.
+* Fix "Get Code" spot related to post type associations for taxonomies.
+* Update some text strings after localization feedback.
+* Fix typos in textdomain for two spots.
+* Updating progressing translation files.
+* Fix value for with_front parameter.
+* Fix error in boolean type for map_meta_cap.
+* Fix missing use of query_var slug if present for taxonomies.
 
 = 1.0.1 =
 * Fix issues with taxonomy transfer and registration. May need to delete new option value and re-convert afterwards.

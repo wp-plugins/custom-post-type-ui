@@ -110,7 +110,7 @@ function cptui_support() {
 						<li>
 							<span class="question"><?php _e( 'How do I add a newly registered taxonomy to a post type that already exists?', 'cpt-plugin' ); ?></span>
 							<div class="answer"><?php printf(
-								__( 'Check out the %s function for documentation and usage examples.'),
+								__( 'Check out the %s function for documentation and usage examples.', 'cpt-plugin' ),
 								'<a href="http://codex.wordpress.org/Function_Reference/register_taxonomy_for_object_type" target="_blank">register_taxonomy_for_object_type()</a>'
 								); ?>
 							</div>
@@ -126,7 +126,7 @@ function cptui_support() {
 							); ?></div>
 						</li>
 						<li>
-							<span class="question"><?php _e( 'How do I filter the "enter title here" text in the post editor screen.', 'cpt-plugin' ); ?></span>
+							<span class="question"><?php _e( 'How do I filter the "enter title here" text in the post editor screen?', 'cpt-plugin' ); ?></span>
 							<div class="answer"><p><?php _e( 'Change text inside the post/page editor title field. Should be able to adapt as necessary.', 'cpt-plugin' ); ?></p>
 <pre><code>function my_custom_title_text( $title ){
 	global $post;
