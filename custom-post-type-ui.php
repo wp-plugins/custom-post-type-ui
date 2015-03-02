@@ -3,8 +3,8 @@
 Plugin Name: Custom Post Type UI
 Plugin URI: https://github.com/WebDevStudios/custom-post-type-ui/
 Description: Admin panel for creating custom post types and custom taxonomies in WordPress
-Author: WebDevStudios.com
-Version: 1.0.2
+Author: WebDevStudios
+Version: 1.0.3
 Author URI: http://webdevstudios.com/
 Text Domain: cpt-plugin
 License: GPLv2
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CPT_VERSION', '1.0.2' );
+define( 'CPT_VERSION', '1.0.3' );
 define( 'CPTUI_WP_VERSION', get_bloginfo( 'version' ) );
 
 /**
@@ -145,6 +145,11 @@ function cptui_register_single_post_type( $post_type = array() ) {
 		}
 	}
 
+	$has_archive = get_disp_boolean( $post_type['has_archive'] );
+	if ( !empty( $post_type['has_archive_string'] ) ) {
+		$has_archive = $post_type['has_archive_string'];
+	}
+
 	$show_in_menu = get_disp_boolean( $post_type['show_in_menu'] );
 	if ( !empty( $post_type['show_in_menu_string'] ) ) {
 		$show_in_menu = $post_type['show_in_menu_string'];
@@ -158,10 +163,7 @@ function cptui_register_single_post_type( $post_type = array() ) {
 			$rewrite['slug'] = $post_type['rewrite_slug'];
 		}
 
-		$withfront = ( !empty( $post_type['rewrite_withfront'] ) ) ? disp_boolean( $post_type['rewrite_withfront'] ) : '';
-		if ( !empty( $withfront ) ) {
-			$rewrite['with_front'] = get_disp_boolean( $post_type['rewrite_withfront'] );
-		}
+		$rewrite['with_front'] = ( 'false' === disp_boolean( $post_type['rewrite_withfront'] ) && ! empty( $post_type['rewrite_withfront'] ) ) ? false : true;
 	}
 
 	$menu_icon = ( !empty( $post_type['menu_icon'] ) ) ? $post_type['menu_icon'] : null;
@@ -175,7 +177,6 @@ function cptui_register_single_post_type( $post_type = array() ) {
 		$menu_position = (int) $post_type['menu_position'];
 	}
 
-
 	if ( ! empty( $post_type['exclude_from_search'] ) ) {
 		$exclude_from_search = get_disp_boolean( $post_type['exclude_from_search'] );
 	} else {
@@ -188,7 +189,7 @@ function cptui_register_single_post_type( $post_type = array() ) {
 		'description'         => $post_type['description'],
 		'public'              => get_disp_boolean( $post_type['public'] ),
 		'show_ui'             => get_disp_boolean( $post_type['show_ui'] ),
-		'has_archive'         => get_disp_boolean( $post_type['has_archive'] ),
+		'has_archive'         => $has_archive,
 		'show_in_menu'        => $show_in_menu,
 		'exclude_from_search' => $exclude_from_search,
 		'capability_type'     => $post_type['capability_type'],
@@ -258,15 +259,9 @@ function cptui_register_single_taxonomy( $taxonomy = array() ) {
 			$rewrite['slug'] = $taxonomy['rewrite_slug'];
 		}
 
-		$withfront = ( !empty( $taxonomy['rewrite_withfront'] ) ) ? disp_boolean( $taxonomy['rewrite_withfront'] ) : '';
-		if ( !empty( $withfront ) ) {
-			$rewrite['with_front'] = $taxonomy['rewrite_withfront'];
-		}
+		$rewrite['with_front'] = ( ! empty( $taxonomy['rewrite_withfront'] ) && 'false' === disp_boolean( $taxonomy['rewrite_withfront'] ) ) ? false : true;
 
-		$hierarchical = ( !empty( $taxonomy['rewrite_hierarchical'] ) ) ? disp_boolean( $taxonomy['rewrite_hierarchical'] ) : '';
-		if ( !empty( $hierarchical ) ) {
-			$rewrite['rewrite_hierarchical'] = $taxonomy['rewrite_hierarchical'];
-		}
+		$rewrite['hierarchical'] = ( ! empty( $taxonomy['rewrite_hierarchical'] ) && 'false' === disp_boolean( $taxonomy['rewrite_hierarchical'] ) ) ? false : true;
 	}
 
 	if ( in_array( $taxonomy['query_var'], array( 'true', 'false', '0', '1' ) ) ) {
@@ -505,15 +500,18 @@ function cptui_settings_tab_menu( $page = 'post_types' ) {
 	<?php echo $title;
 
 	# Import/Export area is getting different tabs, so we need to separate out.
-	if ( 'importexport' != $page ) { ?>
-		<a class="<?php echo $tab1; ?>" href="<?php echo admin_url( 'admin.php?page=cptui_manage_' . $page ); ?>"><?php _e( 'Add New', 'cpt-plugin' ); ?></a>
-		<?php
-
+	if ( 'importexport' != $page ) {
 		if ( 'post_types' == $page ) {
+			?>
+			<a class="<?php echo $tab1; ?>" href="<?php echo admin_url( 'admin.php?page=cptui_manage_' . $page ); ?>"><?php _e( 'Add New Post Type', 'cpt-plugin' ); ?></a>
+			<?php
 			if ( $has ) { ?>
 			<a class="<?php echo $tab2; ?>" href="<?php echo add_query_arg( array( 'action' => 'edit' ), admin_url( 'admin.php?page=cptui_manage_' . $page ) ); ?>"><?php _e( 'Edit Post Types', 'cpt-plugin' ); ?></a>
 			<?php }
 		} elseif ( 'taxonomies' == $page ) {
+			?>
+			<a class="<?php echo $tab1; ?>" href="<?php echo admin_url( 'admin.php?page=cptui_manage_' . $page ); ?>"><?php _e( 'Add New Taxonomy', 'cpt-plugin' ); ?></a>
+			<?php
 			if ( $has ) { ?>
 			<a class="<?php echo $tab2; ?>" href="<?php echo add_query_arg( array( 'action' => 'edit' ), admin_url( 'admin.php?page=cptui_manage_' . $page ) ); ?>"><?php _e( 'Edit Taxonomies', 'cpt-plugin' ); ?></a>
 			<?php }
